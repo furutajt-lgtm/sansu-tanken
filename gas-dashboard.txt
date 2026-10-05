@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html><head><base target="_top"><meta charset="utf-8">
+<style>
+:root{--bg:#F3F6F7;--card:#fff;--ink:#1F3A4A;--ink2:#5B7380;--line:#DCE6EA;--bar:#3E6FB5;--bar2:#9DB8E0;--good:#2F8F6B;--warn:#C27A2C;--bad:#C9483B;--pink:#B84A74}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,"Hiragino Sans","Noto Sans JP",sans-serif}
+.wrap{max-width:640px;margin:0 auto;padding:12px 16px 40px}
+h1{font-size:20px;margin:6px 0 2px}
+h2{font-size:16px;margin:0 0 8px}
+.muted{color:var(--ink2);font-size:13px}
+.card{background:var(--card);border-radius:16px;padding:14px;margin-top:12px;box-shadow:0 1px 0 var(--line)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.tile{background:var(--card);border-radius:14px;padding:10px;box-shadow:0 1px 0 var(--line)}
+.tile b{display:block;font-size:22px;font-variant-numeric:tabular-nums;line-height:1.2}
+.tile span{font-size:12px;color:var(--ink2)}
+.msg{background:#FFF6DC;border-radius:12px;padding:8px 12px;font-size:14px}
+.lv{display:grid;grid-template-columns:64px 1fr 56px;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.lv:last-child{border-bottom:0}
+.dots{display:flex;gap:4px}.dots i{width:18px;height:10px;border-radius:5px;background:var(--line)}.dots i.on{background:var(--bar)}
+.chip{display:inline-block;font-size:11px;border-radius:999px;padding:0 8px;margin-left:4px;background:#EEF2F3;color:var(--ink2)}
+.chip.f{background:#FCE6EE;color:var(--pink)}.chip.o{background:#EEE;color:#888}
+svg text{font-family:inherit}
+.weak{display:grid;grid-template-columns:1fr 46px;gap:6px;align-items:center;font-size:14px;padding:4px 0}
+.wbar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:3px}.wbar i{display:block;height:100%;background:var(--warn);border-radius:4px}
+table{border-collapse:collapse;width:100%;font-size:13px}td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--ink2);font-weight:600}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:#fff;padding:6px 10px;font:inherit;font-size:13px;min-height:36px}
+.seg button.on{background:var(--ink);color:#fff}
+.srow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;flex-wrap:wrap}
+details{border-top:1px solid var(--line);padding:6px 0}summary{font-weight:600;padding:4px 0;cursor:pointer}
+label.ck{display:flex;gap:8px;align-items:center;padding:4px 0;font-size:14px}
+label.ck input{width:20px;height:20px}
+select,textarea{font:inherit;border:1px solid var(--line);border-radius:10px;padding:6px;width:100%}
+.btn{border:0;border-radius:12px;background:var(--pink);color:#fff;font:inherit;font-weight:700;padding:12px;width:100%;margin-top:12px;min-height:48px}
+.ok{color:var(--good);font-weight:700}
+.tip{position:fixed;background:var(--ink);color:#fff;font-size:12px;padding:4px 8px;border-radius:8px;pointer-events:none;display:none}
+</style></head>
+<body><div class="wrap" id="app"><p class="muted" style="margin-top:40px">読み込み中…</p></div><div class="tip" id="tip"></div>
+<script>
+var KEY=<?!= JSON.stringify(key) ?>;
+var URL=<?!= JSON.stringify(url) ?>;
+var SUBJ={math:'算数',jp:'国語',sci:'理科',soc:'社会',eng:'英語'};
+var D=null,SET={};
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function load(){google.script.run.withSuccessHandler(function(r){D=r;SET=r.settings||{};render();}).withFailureHandler(function(e){document.getElementById('app').innerHTML='<p>読み込めませんでした: '+esc(e.message)+'</p>';}).getData(KEY);}
+function bars(rows,opt){/* rows=[{x,label,v}] 1系列の棒グラフ */
+ var W=600,H=200,L=34,B=26,T=14,max=opt.max||Math.max(1,Math.max.apply(null,rows.map(function(r){return r.v;}))),n=rows.length,bw=(W-L-8)/Math.max(n,1);
+ var ticks=opt.ticks||[0,Math.round(max/2),max];var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="'+esc(opt.title)+'">';
+ ticks.forEach(function(t){var y=T+(H-T-B)*(1-t/max);s+='<line x1="'+L+'" x2="'+W+'" y1="'+y+'" y2="'+y+'" stroke="#E6EDF0"/><text x="'+(L-6)+'" y="'+(y+4)+'" text-anchor="end" font-size="12" fill="#5B7380">'+t+(opt.unit||'')+'</text>';});
+ if(opt.goal!=null){var gy=T+(H-T-B)*(1-Math.min(opt.goal,max)/max);s+='<line x1="'+L+'" x2="'+W+'" y1="'+gy+'" y2="'+gy+'" stroke="#B84A74" stroke-dasharray="5 4"/><text x="'+(W-2)+'" y="'+(gy-4)+'" text-anchor="end" font-size="12" fill="#B84A74">目標 '+opt.goal+(opt.unit||'')+'</text>';}
+ rows.forEach(function(r,i){var h=(H-T-B)*Math.min(r.v,max)/max,x=L+4+i*bw,w=Math.max(4,bw-6),y=H-B-h,last=i===n-1;
+  s+='<g class="hit" data-t="'+esc(r.label+'：'+r.v+(opt.unit||''))+'"><rect x="'+x+'" y="'+T+'" width="'+w+'" height="'+(H-T-B)+'" fill="transparent"/><path d="M'+x+' '+(H-B)+' V'+(y+4)+' q0 -4 4 -4 H'+(x+w-4)+' q4 0 4 4 V'+(H-B)+'Z" fill="'+(last?'var(--bar)':'var(--bar2)')+'"/></g>';
+  if(i%Math.ceil(n/7)===0||last)s+='<text x="'+(x+w/2)+'" y="'+(H-8)+'" text-anchor="middle" font-size="12" fill="#5B7380">'+esc(r.label)+'</text>';
+  if(last)s+='<text x="'+(x+w/2)+'" y="'+(y-5)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#1F3A4A">'+r.v+(opt.unit||'')+'</text>';});
+ return s+'</svg>';}
+function linkHTML(){var code=URL+'|'+KEY;return '<div class="card"><h2>iPadとの連携コード</h2><div class="muted">iPadのアプリ「おうちの方へ・せってい」→「スマホで学習状況を見る」に貼り付けます。</div><textarea id="lc" rows="3" readonly>'+esc(code)+'</textarea><button class="btn" id="cp" style="background:var(--ink)">コードをコピー</button><div class="muted">このページのURLは保護者専用です。ほかの人に送らないでください。</div></div>';}
+function bindLinkCode(){var b=document.getElementById('cp');if(!b)return;b.onclick=function(){var t=document.getElementById('lc');t.select();var done=function(){b.textContent='コピーしました';};if(navigator.clipboard)navigator.clipboard.writeText(t.value).then(done,function(){document.execCommand('copy');done();});else{document.execCommand('copy');done();}};}
+function md(d){var a=d.split('-');return (+a[1])+'/'+(+a[2]);}
+function render(){var s=D.snap;var a=document.getElementById('app');
+ if(!s){a.innerHTML='<h1>まなびたんけん 保護者ページ</h1><div class="card">まだiPadから記録が届いていません。下の連携コードをiPadのアプリに貼り付けてください。</div>'+linkHTML()+settingsHTML(null);bindSettings();bindLinkCode();return;}
+ var t=s.today,goal=SET.goalMin||180,tt=t.test;
+ var h='<h1>'+esc(s.name)+'さんの学習</h1><div class="muted">最終更新 '+esc(D.at)+' ・ レベル '+s.lv+' ・ コイン '+s.coins+'</div>';
+ h+='<div class="tiles"><div class="tile"><span>今日の勉強</span><b>'+Math.round(t.sec/60)+'分</b><span>目標 '+goal+'分</span></div><div class="tile"><span>時間わり</span><b>'+t.slots+'/'+t.slotsTotal+'</b><span>コマ完了</span></div><div class="tile"><span>今日のテスト</span><b>'+(tt?Math.round(tt.score/tt.total*100)+'%':'未')+'</b><span>'+(tt?tt.score+'/'+tt.total+'問':'まだ受けていません')+'</span></div></div>';
+ if(SET.msg)h+='<div class="card msg">お子さんへのメッセージ：'+esc(SET.msg)+'</div>';
+ /* レベル */
+ h+='<div class="card"><h2>教科別レベル</h2><div class="muted">直近のテスト（なければ問題集）の正答率から5段階で判定</div>';
+ s.subj.forEach(function(x){var mode=(SET.subj||{})[x.id]||'normal';h+='<div class="lv"><div><b>'+SUBJ[x.id]+'</b>'+(mode==='focus'?'<span class="chip f">重点</span>':mode==='off'?'<span class="chip o">休み</span>':'')+'</div><div><div class="dots">'+[1,2,3,4,5].map(function(i){return '<i class="'+(x.lv>=i?'on':'')+'"></i>';}).join('')+'</div><div class="muted">教科書 '+x.read+'/'+x.total+'節</div></div><div style="text-align:right;font-variant-numeric:tabular-nums">'+(x.acc==null?'—':x.acc+'%')+'</div></div>';});
+ h+='</div>';
+ /* テスト推移 */
+ var tests=s.tests.slice(-14);
+ h+='<div class="card"><h2>毎日テストの正答率</h2>'+(tests.length?bars(tests.map(function(x){return {label:md(x.d),v:Math.round(x.score/x.total*100)};}),{max:100,ticks:[0,50,100],unit:'%',title:'テストの正答率'}):'<p class="muted">まだテストの記録がありません。</p>')+'</div>';
+ var days=s.days.slice(-14);
+ h+='<div class="card"><h2>勉強時間（分）</h2>'+bars(days.map(function(x){return {label:md(x.d),v:Math.round(x.sec/60)};}),{goal:goal,unit:'分',title:'勉強時間',max:Math.max(goal,Math.max.apply(null,days.map(function(x){return Math.round(x.sec/60);}).concat([1])))})+'</div>';
+ /* にがて */
+ var weak=s.secs.filter(function(x){return x.n>=3;}).map(function(x){x.acc=Math.round(x.ok/x.n*100);return x;}).filter(function(x){return x.acc<70;}).sort(function(a,b){return a.acc-b.acc;}).slice(0,8);
+ h+='<div class="card"><h2>にがてな単元</h2>'+(weak.length?weak.map(function(x){return '<div class="weak"><div>'+SUBJ[x.s]+'・'+esc(x.t)+'<div class="wbar"><i style="width:'+x.acc+'%"></i></div></div><div style="text-align:right">'+x.acc+'%</div></div>';}).join('')+'<p class="muted">下の「重点単元」で選ぶと、時間わりの「にがてこくふく」とテストで多く出題されます。</p>':'<p class="muted">正答率70%未満の単元はありません。</p>')+'</div>';
+ h+='<div class="card"><h2>最近まちがえた問題</h2>'+(s.miss.length?'<table><tr><th>日付</th><th>問題</th><th>正解</th><th>答え</th></tr>'+s.miss.slice(0,12).map(function(m){return '<tr><td>'+md(m.d||'0-0-0')+'</td><td>'+esc(m.t)+'</td><td>'+esc(m.a)+'</td><td>'+esc(m.u)+'</td></tr>';}).join('')+'</table>':'<p class="muted">ありません。</p>')+'</div>';
+ h+=settingsHTML(s);
+ h+=linkHTML();
+ h+='<p class="muted" style="margin-top:14px">記録の一覧（スプレッドシート）：<a href="'+esc(D.sheet)+'">開く</a></p>';
+ a.innerHTML=h;bindSettings();bindTips();bindLinkCode();}
+function settingsHTML(s){var sub=SET.subj||{},sel=SET.secs||[];
+ var h='<div class="card" id="set"><h2>学習の設定</h2><div class="muted">保存すると、iPadが次に記録を送ったとき（アプリを開いたとき・問題を解き終えたとき）に反映されます。</div>';
+ h+='<div style="margin-top:8px">'+Object.keys(SUBJ).map(function(k){var v=sub[k]||'normal';return '<div class="srow"><b>'+SUBJ[k]+'</b><div class="seg" data-k="'+k+'">'+[['focus','重点'],['normal','ふつう'],['off','休み']].map(function(o){return '<button data-v="'+o[0]+'" class="'+(v===o[0]?'on':'')+'">'+o[1]+'</button>';}).join('')+'</div></div>';}).join('')+'</div>';
+ h+='<p class="muted">重点：時間わりの「にがてこくふく」とテストで優先して出題。休み：時間わりから外し、その時間は重点・にがての練習に置きかえます。</p>';
+ if(s){h+='<h2 style="margin-top:10px">重点単元</h2>';Object.keys(SUBJ).forEach(function(k){var list=s.secs.filter(function(x){return x.s===k;});var cnt=list.filter(function(x){return sel.indexOf(x.id)>=0;}).length;
+  h+='<details><summary>'+SUBJ[k]+(cnt?'（'+cnt+'）':'')+'</summary>'+list.map(function(x){return '<label class="ck"><input type="checkbox" value="'+x.id+'" '+(sel.indexOf(x.id)>=0?'checked':'')+'>'+esc(x.t)+(x.n?' <span class="muted">'+Math.round(x.ok/x.n*100)+'%</span>':'')+'</label>';}).join('')+'</details>';});}
+ h+='<div class="srow" style="margin-top:8px"><b>毎日テストの問題数</b><select id="tn" style="width:auto">'+[10,15,20].map(function(n){return '<option '+((SET.testN||15)==n?'selected':'')+'>'+n+'</option>';}).join('')+'</select></div>';
+ h+='<div class="srow"><b>1日の目標時間</b><select id="gm" style="width:auto">'+[60,90,120,150,180].map(function(n){return '<option value="'+n+'" '+((SET.goalMin||180)==n?'selected':'')+'>'+n+'分</option>';}).join('')+'</select></div>';
+ h+='<div style="margin-top:8px"><b>お子さんへのメッセージ</b><div class="muted">アプリのホーム画面に表示されます（ひらがな推奨）</div><textarea id="msg" rows="2" maxlength="80">'+esc(SET.msg||'')+'</textarea></div>';
+ h+='<button class="btn" id="save">保存する</button><div id="sv" class="muted" style="text-align:center;margin-top:6px"></div></div>';return h;}
+function bindSettings(){var root=document.getElementById('set');if(!root)return;
+ root.querySelectorAll('.seg').forEach(function(g){g.querySelectorAll('button').forEach(function(b){b.onclick=function(){g.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');};});});
+ document.getElementById('save').onclick=function(){var o={subj:{},secs:[],testN:+document.getElementById('tn').value,goalMin:+document.getElementById('gm').value,msg:document.getElementById('msg').value.trim()};
+  root.querySelectorAll('.seg').forEach(function(g){o.subj[g.dataset.k]=g.querySelector('.on').dataset.v;});
+  root.querySelectorAll('input[type=checkbox]:checked').forEach(function(c){o.secs.push(c.value);});
+  if(!root.querySelector('input[type=checkbox]'))o.secs=SET.secs||[];
+  var sv=document.getElementById('sv');sv.textContent='保存中…';
+  google.script.run.withSuccessHandler(function(r){SET=r;sv.innerHTML='<span class="ok">保存しました</span>';}).withFailureHandler(function(e){sv.textContent='保存できませんでした: '+e.message;}).saveSettings(KEY,o);};}
+function bindTips(){var tip=document.getElementById('tip');document.querySelectorAll('.hit').forEach(function(g){var show=function(ev){var p=ev.touches?ev.touches[0]:ev;tip.textContent=g.dataset.t;tip.style.display='block';tip.style.left=Math.min(p.clientX+10,window.innerWidth-120)+'px';tip.style.top=(p.clientY-34)+'px';};g.addEventListener('mousemove',show);g.addEventListener('touchstart',show,{passive:true});g.addEventListener('mouseleave',function(){tip.style.display='none';});});document.addEventListener('touchend',function(){setTimeout(function(){tip.style.display='none';},1200);});}
+load();
+</script></body></html>

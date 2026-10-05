@@ -1136,20 +1136,23 @@ const secsOf=chs=>chs.flatMap(c=>CH[chIdx(c)].secs);
 const SLOT={
  math:{name:'{算数|さんすう}',color:'#2F8F6B'},jp:{name:'{国語|こくご}',color:'#C24A6A'},sci:{name:'{理科|りか}',color:'#3E9A5A'},soc:{name:'{社会|しゃかい}',color:'#C27A2C'},eng:{name:'えいご',color:'#3E6FB5'},
  scisoc:{name:'{理科|りか}・{社会|しゃかい}({日|ひ}がわり)',color:'#6A8A3A'},word:{name:'{文章|ぶんしょう}{問題|もんだい}',color:'#7A5BB5'},game:{name:'ゲーム',color:'#E4684F'},
- review:{name:'ふくしゅう',color:'#C27A2C'},rest:{name:'{休|やす}けい',color:'#8AA8B4'}
+ review:{name:'ふくしゅう',color:'#C27A2C'},test:{name:'きょうの テスト',color:'#B84A74'},focus:{name:'にがて こくふく',color:'#D9A421'},rest:{name:'{休|やす}けい',color:'#8AA8B4'}
 };
-const DEFAULT_TT=[{k:'math',min:25},{k:'jp',min:25},{k:'rest',min:10},{k:'scisoc',min:25},{k:'eng',min:20},{k:'rest',min:10},{k:'word',min:20},{k:'game',min:15},{k:'review',min:20},{k:'math',min:10}];
+const DEFAULT_TT=[{k:'test',min:15},{k:'math',min:25},{k:'jp',min:25},{k:'rest',min:10},{k:'scisoc',min:25},{k:'eng',min:20},{k:'rest',min:10},{k:'focus',min:25},{k:'word',min:15},{k:'game',min:10}];
 const TT=()=>(S.tt&&S.tt.length?S.tt:DEFAULT_TT);
 const dayNo=()=>Math.floor(Date.now()/864e5);
 const allSecs=()=>CH.flatMap(c=>c.secs);
 const nextSec=subj=>subjSecs(subj).find(s=>!S.sec[s]);
 const subjOf=sec=>CH.find(c=>c.secs.includes(sec)).subj;
-function slotSubj(k){return k==='scisoc'?(dayNo()%2?'sci':'soc'):k;}
+function slotSubj(k){if(k==='scisoc'){const a=dayNo()%2?'sci':'soc',b=a==='sci'?'soc':'sci';k=subjMode(a)!=='off'?a:subjMode(b)!=='off'?b:'focus';}
+ if(['math','jp','sci','soc','eng'].includes(k)&&subjMode(k)==='off')return 'focus';return k;}
 function slotDesc(b){const k=slotSubj(b.k);
  if(['math','jp','sci','soc','eng'].includes(k)){const n=nextSec(k);return n?`${R(SEC[n].title)}(よむ → {問題|もんだい})`:'まぜまぜ ドリル';}
  if(k==='word')return '4つの ステップで 5{問|もん}';
  if(k==='game')return R(RUSH[gameOf()].name);
  if(k==='review')return `まちがえた {問題|もんだい} ${S.miss.length}{問|もん}`;
+ if(k==='test'){const t=testDone();return t?R(`${t.score}/${t.total} せいかい`):R(`${SET().testN||15}{問|もん}の ちからだめし`);}
+ if(k==='focus')return focusDesc();
  if(k==='rest')return '{目|め}と からだを {休|やす}めよう';return '';}
 function gameOf(){const ks=Object.keys(RUSH);return ks[dayNo()%ks.length];}
 function todayDone(){const d=today();if(!S.today||S.today.d!==d)S.today={d,done:[]};return S.today.done;}
@@ -1165,7 +1168,7 @@ function ttScreen(){
 }
 function finishSlot(i){const dn=todayDone();const first=!dn[i];dn[i]=true;save();
  if(first){gain(30,20);if(TT().every((_,j)=>dn[j])){S.fullDays=(S.fullDays||0)+1;gain(100,100);setTimeout(()=>toast('きょうの {時間|じかん}わり ぜんぶ クリア! +100コイン',3000),400);}}
- go(ttScreen);}
+ syncSoon();go(ttScreen);}
 function studySubj(subj,done,backFn){const n=nextSec(subj),c=SUBJ.find(x=>x.id===subj);
  if(n)go(()=>bookSec(n,0,()=>go(()=>runSet({title:P(SEC[n].title),qs:makeQs([n],6),color:c.color,onDone:()=>{checkBoss(n);done();},back:backFn})),backFn));
  else go(()=>runSet({title:'まぜまぜ ドリル',qs:makeQs(subjSecs(subj),8),color:c.color,onDone:done,back:backFn}));}
@@ -1177,6 +1180,8 @@ function runSlot(i,b){const done=()=>finishSlot(i),k=slotSubj(b.k),bk=()=>ttScre
  else if(k==='word'){const mc=Math.max(0,...CH.filter(c=>c.subj==='math').map((c,j)=>c.secs.some(s=>S.sec[s])?j:0));go(()=>runSet({title:P('{文章|ぶんしょう}{問題|もんだい}'),qs:Array.from({length:5},(_,j)=>Object.assign(wordQ(mc)(j),{sec:'word'})),color:'#7A5BB5',onDone:done,back:bk}));}
  else if(k==='game')go(()=>rushGame(gameOf(),done,bk));
  else if(k==='review')go(()=>startReview(null,10,done,bk,true));
+ else if(k==='test')startDailyTest(done,bk);
+ else if(k==='focus')go(()=>runSet({title:P('にがて こくふく'),qs:focusQs(10),color:'#D9A421',review:true,onDone:done,back:bk}));
 }
 
 /* ===== ホーム ===== */
@@ -1185,6 +1190,8 @@ function home(){
  const t=S.time[today()]||0,L=TT(),dn=todayDone(),total=L.reduce((a,b)=>a+b.min,0),cnt=L.filter((_,i)=>dn[i]).length;
  app.innerHTML=statusBar()+`
  <div class="hero"><div class="partner">${OWL()}</div><div><h1 class="title disp">まなび<span>たんけん</span></h1><div class="say">${R(pick(CHEER))}</div></div></div>
+ ${SET().msg?`<div class="pmsg"><span style="width:44px;flex:none">${FACE.kid()}</span><span>${R('おうちの{人|ひと}から: ')}${esc(SET().msg)}</span></div>`:''}
+ <button class="tcard ${testDone()?'done':''}" id="dtest"><div><div class="disp">${R('きょうの テスト')}</div><div style="font-weight:700">${testDone()?R(`${testDone().score}/${testDone().total} せいかい ・ けっかを {見|み}る`):R(`まずは テストで ちからだめし(${SET().testN||15}{問|もん})`)}</div></div><span class="chip">${testDone()?'クリア':'まだ'}</span></button>
  <button class="today" id="today"><div><div class="muted" style="color:#C9DCE3">${R('@nameさんの')}</div><div class="disp">きょうの {時間|じかん}わり ${cnt}/${L.length}</div><div style="font-size:.8em">{勉強|べんきょう} ${R(jpT(t))} / ${R(jpT(total*60))}</div><div class="tbar"><i style="width:${Math.min(100,t/(total*60)*100)}%"></i></div></div><span class="go">はじめる</span></button>
  <button class="dtile" id="dress"><div>${avatar(curEq())}</div><div><div class="disp">きせかえルーム</div><div style="font-weight:700">${R('コインで ふくや かみがたを あつめよう')}</div><div class="muted">${R(`あつめた アイテム ${ALLITEMS.filter(i=>DR_().own[i.id]).length} / ${ALLITEMS.length}`)}</div></div></button>
  <div class="menu" style="margin-bottom:14px">${SUBJ.map(s=>{const secs=subjSecs(s.id),d=secs.filter(x=>S.sec[x]).length;return `<button class="mbtn" data-s="${s.id}" style="--ac:${s.color}"><span class="ic">${IC[s.icon]}</span><span><b>${R(s.name)}</b><small>{教科書|きょうかしょ} ${d}/${secs.length}</small></span></button>`;}).join('')}</div>
@@ -1198,6 +1205,7 @@ function home(){
  </div>
  <div class="row" style="margin-top:18px"><button class="btn ghost" id="parent">おうちの{方|かた}へ・せってい</button></div>`;
  $('#today').onclick=()=>go(ttScreen);
+ $('#dtest').onclick=()=>{SND.tap();startDailyTest(()=>go(home),home);};
  $('#dress').onclick=()=>{SND.tap();go(dressRoom);};
  $$('[data-s]').forEach(b=>b.onclick=()=>{SND.tap();go(()=>subjScreen(b.dataset.s));});
  const act={map:mapScreen,game:gameMenu,boss:bossMenu,review:()=>startReview(null),shop,zukan};
@@ -1429,7 +1437,7 @@ function renderToyQ(q,host){host.innerHTML=`<p class="prompt">${R(q.prompt)}</p>
 function renderChoice(q,host){
  host.innerHTML=`${R(q.visual||'')}${q.audio?`<div class="row center"><button class="btn primary" id="play" style="font-size:1.2em">▶ ${R('{音|おと}を {聞|き}く')}</button></div>`:''}<p class="prompt">${R(q.prompt)}</p><div class="choices ${q.ops?'ops':''}">${q.options.map((o,i)=>`<button class="choice" data-o="${i}">${R(o.h)}</button>`).join('')}</div><div class="row center"><button class="btn ghost small" id="hintBtn">${R('ヒントを {見|み}る')}</button></div>`;
  $$('#qbody .choice').forEach(b=>b.onclick=()=>{if(Q.done)return;const o=q.options[+b.dataset.o];b.classList.add(o.ok?'yes':'no');
-  if(!o.ok&&!Q.boss&&Q.tries===0&&q.options.length>2){Q.tries++;SND.bad();tryAgain(q);return;}
+  if(!o.ok&&!Q.boss&&!Q.test&&Q.tries===0&&q.options.length>2){Q.tries++;SND.bad();tryAgain(q);return;}
   result(o.ok,q,P(o.h));});
  $('#hintBtn').onclick=()=>showHint(q);
  if(q.audio){$('#play').onclick=()=>sayEN(q.audio);setTimeout(()=>sayEN(q.audio),350);}}
@@ -1463,7 +1471,7 @@ function renderWord(q){
 function showHint(q){const fb=$('#fb');fb.hidden=false;fb.className='fb try';fb.innerHTML=`<div class="fbrow"><div class="face">${OWL()}</div><div><p class="big">ヒント</p><div>${R(q.hint)}</div></div></div>`;fb.scrollIntoView({behavior:'smooth',block:'nearest'});}
 function tryAgain(q){const fb=$('#fb');fb.hidden=false;fb.className='fb try';fb.innerHTML=`<div class="fbrow"><div class="face">${OWL()}</div><div><p class="big">おしい! もう{一度|いちど}</p><div>${R(q.hint)}</div></div></div>`.replace('もう{一度|いちど}',R('もう{一度|いちど}'));fb.scrollIntoView({behavior:'smooth',block:'nearest'});}
 function check(q){const ok=q.answers.every((a,i)=>Number(Q.inputs[i])===a);
- if(!ok&&!Q.boss&&Q.tries===0){Q.tries++;SND.bad();tryAgain(q);Q.inputs=Q.inputs.map(()=> '');Q.active=0;updBoxes();return;}
+ if(!ok&&!Q.boss&&!Q.test&&Q.tries===0){Q.tries++;SND.bad();tryAgain(q);Q.inputs=Q.inputs.map(()=> '');Q.active=0;updBoxes();return;}
  result(ok,q,Q.inputs.join(' / '));}
 function stat(sec,ok){const s=S.drill[sec]||(S.drill[sec]={ok:0,n:0});s.n++;if(ok)s.ok++;}
 function result(ok,q,u){
@@ -1485,6 +1493,8 @@ function result(ok,q,u){
  fb.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function finishSet(){
+ if(Q.test){finishTest();return;}
+ syncSoon();
  MODE='menu';const n=Q.boss?Q.i+1:Q.qs.length,r=Q.score/n;
  if(Q.boss){const win=Q.hp<=0;let bonus=0;if(win){const first=!S.boss[Q.boss];S.boss[Q.boss]=true;bonus=first?150:50;gain(100,bonus);}save();
   app.innerHTML=`<div class="result"><div style="width:130px">${win?OWL():monster(Q.boss)}</div><h2>${win?R(BOSSES[Q.boss].name+'を たおした!'):'くやしい! また ちょうせん しよう'}</h2>
@@ -1912,6 +1922,109 @@ function coordScreen(){const d=DR_();d.saved=d.saved||[];
  $$('[data-s]').forEach(b=>b.onclick=()=>{d.saved[+b.dataset.s]={c:d.char,eq:curEq()};save();SND.good();coordScreen();});
  $$('[data-l]').forEach(b=>b.onclick=()=>{const s=d.saved[+b.dataset.l];d.char=s.c;d.eq[s.c]=Object.assign({},s.eq);save();SND.tap();go(dressRoom);});}
 </script>
+<style>
+.testmode #hintBtn{display:none!important}
+.tcard{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;border:0;text-align:left;border-radius:22px;background:#FCE6EE;padding:14px 18px;box-shadow:0 5px 0 #E8B6CC;margin-bottom:14px;width:100%}
+.tcard .disp{font-size:clamp(18px,3.4vw,24px);color:#B84A74}
+.tcard.done{background:#E3F4EA;box-shadow:0 5px 0 #B6DCC6}
+.pmsg{background:#FFF6DC;border-radius:18px;padding:10px 16px;margin-bottom:14px;font-weight:700;display:flex;gap:10px;align-items:center}
+.lvrow{display:grid;grid-template-columns:90px 1fr 60px;gap:10px;align-items:center;width:100%;max-width:460px}
+.lvbar{height:14px;background:#E7ECEE;border-radius:99px;overflow:hidden}.lvbar i{display:block;height:100%;background:#3E6FB5;border-radius:99px}
+</style>
+<script>
+/* ===== おうちの人の設定(スマホ連携 / iPad内) ===== */
+const SET=()=>S.remote||S.localSet||{};
+const subjMode=s=>((SET().subj||{})[s])||'normal';
+const focusSecs=()=>(SET().secs||[]).filter(x=>SEC[x]);
+function accOf(sec){const d=S.drill[sec]||{ok:0,n:0};let ok=d.ok,n=d.n;Object.values(S.tests||{}).forEach(t=>{const v=(t.sec||{})[sec];if(v){ok+=v[0]*2;n+=v[1]*2;}});return n?ok/n:null;}
+function weakSecs(){return allSecs().filter(s=>{const d=S.drill[s]||{n:0};const a=accOf(s);return a!==null&&a<.6&&(d.n>=3||Object.values(S.tests||{}).some(t=>(t.sec||{})[s]));}).sort((a,b)=>accOf(a)-accOf(b));}
+function subjAcc(s){const ts=Object.keys(S.tests||{}).sort().slice(-7);let ok=0,n=0;ts.forEach(d=>{const v=(S.tests[d].by||{})[s];if(v){ok+=v[0];n+=v[1];}});
+ if(!n)subjSecs(s).forEach(x=>{const d=S.drill[x];if(d){ok+=d.ok;n+=d.n;}});return n?ok/n:null;}
+function subjLv(s){const a=subjAcc(s);if(a===null)return 0;return a>=.9?5:a>=.75?4:a>=.6?3:a>=.4?2:1;}
+
+/* ===== 毎日テスト ===== */
+function testDone(){return (S.tests||{})[today()];}
+function testQs(){const N=SET().testN||15;const read=allSecs().filter(s=>S.sec[s]&&subjMode(subjOf(s))!=='off');
+ let pool=read.length>=3?read:SUBJ.filter(x=>subjMode(x.id)!=='off').map(x=>subjSecs(x.id)[0]);
+ const w=[];pool.forEach(s=>{let k=1;if(focusSecs().includes(s))k+=2;if(subjMode(subjOf(s))==='focus')k+=1;if(weakSecs().includes(s))k+=2;for(let i=0;i<k;i++)w.push(s);});
+ focusSecs().forEach(s=>{if(!pool.includes(s))w.push(s,s);});
+ const subs=[...new Set(w.map(subjOf))];const pickList=[];subs.forEach(su=>pickList.push(pick(w.filter(x=>subjOf(x)===su))));
+ while(pickList.length<N)pickList.push(pick(w));
+ let wordN=0;return shuffle(pickList.slice(0,N)).map((s,i)=>{let q=GEN[s](rand(1,4));if(q.type==='word'){if(wordN>=2)q=GEN.s13(3);else wordN++;}return Object.assign(q,{sec:q.type==='word'&&s==='s43'?'s43':s,step:1});});}
+function startDailyTest(onDone,backFn){
+ if(testDone()){go(()=>testResult(testDone(),onDone||home));return;}
+ app.innerHTML=`<div class="titlebar">${back()}<h2>きょうの テスト</h2></div><div class="result"><div style="width:130px">${OWL()}</div><h2>${R('きょうの ちからだめし!')}</h2>
+ <p>${R(`{全部|ぜんぶ}で ${SET().testN||15}{問|もん}。テストでは ヒントは つかえないよ。1{回|かい}で こたえよう。`)}</p><p class="muted">${R('けっかで「にがて」が わかると、つぎの {勉強|べんきょう}で しっかり れんしゅう できるよ。')}</p>
+ <button class="btn primary" id="go">テスト スタート</button></div>`;
+ bindBack(backFn||home);
+ $('#go').onclick=()=>{app.classList.add('testmode');runSet({title:'きょうの テスト',qs:testQs(),color:'#B84A74',test:true,onDone:()=>{},back:()=>{app.classList.remove('testmode');(backFn||home)();},afterTest:onDone||home});};
+}
+function finishTest(){
+ app.classList.remove('testmode');const by={},sec={};Q.qs.forEach((q,i)=>{if(Q.res[i]===undefined)return;const s=q.sec&&SEC[q.sec]?subjOf(q.sec):'math';by[s]=by[s]||[0,0];by[s][1]++;if(Q.res[i])by[s][0]++;if(SEC[q.sec]){sec[q.sec]=sec[q.sec]||[0,0];sec[q.sec][1]++;if(Q.res[i])sec[q.sec][0]++;}});
+ const r={score:Q.score,total:Q.qs.length,by,sec};S.tests=S.tests||{};S.tests[today()]=r;const c=Q.score*5;gain(30,c);save();syncSoon(500);
+ go(()=>testResult(r,Q.afterTest,c));}
+function testResult(r,next,coins){
+ const pct=Math.round(r.score/r.total*100);const weak=Object.keys(r.sec).filter(s=>r.sec[s][0]/r.sec[s][1]<.6).slice(0,5);
+ const msg=pct>=90?'すばらしい! この ちょうし!':pct>=70?'よく できました!':pct>=50?'あと すこし! にがてを れんしゅう しよう':'だいじょうぶ。にがてが わかったのが {大|おお}きな {一歩|いっぽ}!';
+ app.innerHTML=`<div class="titlebar">${back()}<h2>テストの けっか</h2></div><div class="result"><div style="width:120px">${OWL()}</div><h2>${R(msg)}</h2><p class="bigeq">${r.score} / ${r.total}</p>${coins?`<span class="chip">${COIN} +${coins}</span>`:''}
+ <h3>${R('{教科|きょうか}ごとの レベル')}</h3><div class="stack" style="width:100%;align-items:center;gap:8px">${SUBJ.map(s=>{const v=r.by[s.id];const lv=subjLv(s.id);return `<div class="lvrow"><b style="color:${s.color}">${R(s.name)}</b><div class="lvbar"><i style="width:${lv*20}%;background:${s.color}"></i></div><span>${lv?'Lv.'+lv:'—'}${v?` <small class="muted">${v[0]}/${v[1]}</small>`:''}</span></div>`;}).join('')}</div>
+ ${weak.length?`<h3>${R('つぎに がんばる ところ')}</h3><div class="stack" style="width:100%;max-width:460px;gap:8px">${weak.map(s=>`<div class="row between" style="background:#fff;border-radius:14px;padding:8px 12px"><span>${R(SEC[s].title)}</span><button class="btn small primary" data-rb="${s}">{教科書|きょうかしょ}を {読|よ}む</button></div>`).join('')}</div><p class="muted">${R('{時間|じかん}わりの「にがて こくふく」で れんしゅう できるよ。')}</p>`:''}
+ <button class="btn go" id="ok">つぎへ</button></div>`;
+ bindBack(home);$('#ok').onclick=()=>go(next||home);
+ $$('[data-rb]').forEach(b=>b.onclick=()=>go(()=>bookSec(b.dataset.rb,0,()=>go(home),home)));}
+
+/* ===== にがて こくふく ===== */
+function focusQs(n=10){const out=[];const fs=focusSecs(),ws=weakSecs(),fsub=SUBJ.filter(s=>subjMode(s.id)==='focus').map(s=>s.id);
+ const rel=m=>!fs.length&&!fsub.length||fs.includes(m.sec)||fsub.includes(SEC[m.sec]?subjOf(m.sec):'math');
+ shuffle(S.miss.filter(rel)).slice(0,4).forEach(m=>out.push(Object.assign({},m,{step:1})));
+ let pool=fs.concat(ws.filter(s=>!fs.includes(s)));
+ if(fsub.length)pool=pool.concat(fsub.flatMap(s=>subjSecs(s).filter(x=>S.sec[x])));
+ if(!pool.length)pool=allSecs().filter(s=>S.sec[s]);if(!pool.length)pool=['s01','j11','e11'];
+ return out.concat(makeQs(pool,Math.max(0,n-out.length)));}
+function focusDesc(){const fs=focusSecs(),ws=weakSecs();if(fs.length)return R('おうちの{人|ひと}が えらんだ ところ + にがて');if(ws.length)return R(`にがて: ${SEC[ws[0]].title}`);return R('まちがえた {問題|もんだい}と ふくしゅう');}
+
+/* ===== スマホへ おくる ===== */
+function snapshot(){const d=today();const days=Object.keys(S.time).sort().slice(-30).map(k=>({d:k,sec:S.time[k],slots:k===d?todayDone().filter(Boolean).length:''}));
+ if(!days.some(x=>x.d===d))days.push({d,sec:0,slots:todayDone().filter(Boolean).length});
+ const tests=Object.keys(S.tests||{}).sort().slice(-30).map(k=>({d:k,score:S.tests[k].score,total:S.tests[k].total,by:S.tests[k].by}));
+ return{v:1,name:P(S.name||''),lv:lvInfo(S.xp).l,coins:S.coins,
+  today:{d,sec:S.time[d]||0,slots:todayDone().filter(Boolean).length,slotsTotal:TT().length,test:testDone()?{score:testDone().score,total:testDone().total}:null},
+  days,tests,
+  subj:SUBJ.map(s=>{const a=subjAcc(s.id);return{id:s.id,read:subjSecs(s.id).filter(x=>S.sec[x]).length,total:subjSecs(s.id).length,acc:a===null?null:Math.round(a*100),lv:subjLv(s.id)};}),
+  secs:allSecs().map(s=>{const dd=S.drill[s]||{ok:0,n:0};let ok=dd.ok,n=dd.n;Object.values(S.tests||{}).forEach(t=>{const v=(t.sec||{})[s];if(v){ok+=v[0];n+=v[1];}});return{id:s,s:subjOf(s),t:P(SEC[s].title),read:!!S.sec[s],ok,n};}),
+  miss:S.miss.slice(0,20).map(m=>({d:m.d,t:String(m.text||'').slice(0,60),a:String(m.ansText||''),u:String(m.u||'')}))};}
+let syncT=null;
+function syncSoon(ms=3000){clearTimeout(syncT);syncT=setTimeout(syncNow,ms);}
+function syncNow(){const L=S.link;if(!L||!L.url)return Promise.resolve(false);
+ return fetch(L.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:L.key,snapshot:snapshot()})})
+ .then(r=>r.json()).then(j=>{if(j.ok){L.last=Date.now();L.err='';if(j.settings){const old=JSON.stringify(S.remote||{});S.remote=j.settings;if(JSON.stringify(j.settings)!==old&&old!=='{}')toast('おうちの{人|ひと}の せっていが かわったよ');}save();return true;}L.err=j.err||'error';save();return false;})
+ .catch(e=>{L.err=String(e.message||e);save();return false;});}
+setInterval(()=>{if(document.visibilityState==='visible')syncNow();},5*60*1000);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncSoon(1500);});
+/* 連携コード(URL|キー) */
+function parseLink(code){code=String(code||'').trim();const m=code.match(/(https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec)[^|]*\|?\s*([A-Za-z0-9]+)?/);if(!m)return null;
+ let key=m[2];if(!key){const k=code.match(/[?&]key=([A-Za-z0-9]+)/);key=k&&k[1];}return key?{url:m[1],key}:null;}
+(function(){try{const q=new URLSearchParams(location.search).get('link');if(q){const l=parseLink(decodeURIComponent(q));if(l){S.link=l;save();history.replaceState(null,'',location.pathname);setTimeout(()=>toast('スマホと つながりました'),800);}}}catch(e){}})();
+
+/*ADULT*/
+function linkPanel(){const L=S.link;const st=SET();
+ return `<div class="panel"><b>スマホで学習状況を見る（保護者連携）</b>
+ ${L&&L.url?`<p class="muted">連携中です。最終送信: ${L.last?new Date(L.last).toLocaleString('ja-JP'):'まだ'}${L.err?`<br><span style="color:var(--coral)">送信エラー: ${esc(L.err)}</span>`:''}</p><div class="row"><button class="btn small go" id="lsync">今すぐ送る</button><button class="btn small ghost" id="lcut">連携を解除</button></div>`:
+ `<p class="muted">保護者ページ（スマホ）に表示される「連携コード」をここに貼り付けてください。</p><textarea id="lcode" rows="3" style="width:100%;font:inherit;font-size:14px;border-radius:12px;border:2px solid var(--line);padding:8px" placeholder="https://script.google.com/macros/s/…/exec|キー"></textarea><div class="row"><button class="btn small go" id="lset">連携する</button><span id="lmsg" class="muted"></span></div>`}</div>
+ <div class="panel"><b>重点にする教科・単元</b>${L&&L.url?'<p class="muted">連携中はスマホの保護者ページで設定します。現在の設定：'+SUBJ.map(s=>P(s.name)+'＝'+({focus:'重点',normal:'ふつう',off:'休み'}[subjMode(s.id)])).join('／')+'、重点単元 '+focusSecs().length+'件、テスト '+(st.testN||15)+'問</p>':
+ `<p class="muted">重点：テストと「にがてこくふく」で優先して出題。休み：時間わりから外します。</p>${SUBJ.map(s=>`<div class="row between"><span>${P(s.name)}</span><div class="seg" data-fs="${s.id}">${[['focus','重点'],['normal','ふつう'],['off','休み']].map(([v,t])=>`<button data-v="${v}" class="${subjMode(s.id)===v?'on':''}">${t}</button>`).join('')}</div></div>`).join('')}
+ <div class="row between"><span>毎日テストの問題数</span><div class="seg" id="ltn">${[10,15,20].map(n=>`<button data-v="${n}" class="${(st.testN||15)===n?'on':''}">${n}問</button>`).join('')}</div></div>
+ <details><summary class="muted">重点単元を選ぶ（${focusSecs().length}件）</summary>${SUBJ.map(s=>`<div style="margin-top:6px"><b>${P(s.name)}</b>${subjSecs(s.id).map(x=>`<label style="display:flex;gap:8px;align-items:center;font-size:.85em"><input type="checkbox" data-fsec="${x}" ${focusSecs().includes(x)?'checked':''} style="width:20px;height:20px">${P(SEC[x].title)}</label>`).join('')}</div>`).join('')}</details>`}</div>`;}
+function bindLink(){const L=S.link;
+ if($('#lset'))$('#lset').onclick=()=>{const l=parseLink($('#lcode').value);if(!l){$('#lmsg').textContent='コードを読み取れませんでした';return;}S.link=l;save();$('#lmsg').textContent='送信テスト中…';syncNow().then(ok=>{$('#lmsg').textContent=ok?'連携しました':'送信できませんでした（URLとキーを確認してください）';setTimeout(parent,1200);});};
+ if($('#lsync'))$('#lsync').onclick=()=>syncNow().then(()=>parent());
+ if($('#lcut'))$('#lcut').onclick=()=>{S.link=null;S.remote=null;save();parent();};
+ const ls=()=>{S.localSet=S.localSet||{};return S.localSet;};
+ $$('[data-fs]').forEach(g=>g.querySelectorAll('button').forEach(b=>b.onclick=()=>{const o=ls();o.subj=o.subj||{};o.subj[g.dataset.fs]=b.dataset.v;save();parent();}));
+ $$('#ltn button').forEach(b=>b.onclick=()=>{ls().testN=+b.dataset.v;save();parent();});
+ $$('[data-fsec]').forEach(c=>c.onchange=()=>{const o=ls();o.secs=$$('[data-fsec]').filter(x=>x.checked).map(x=>x.dataset.fsec);save();});}
+/*ENDADULT*/
+</script>
 <script>
 /* ===== ショップ ===== */
 function shop(){
@@ -1940,7 +2053,7 @@ function zukan(){
 }
 
 /*ADULT*/
-const SLOTOPT=['math','jp','sci','soc','scisoc','eng','word','game','review','rest'];
+const SLOTOPT=['test','math','jp','sci','soc','scisoc','eng','focus','word','game','review','rest'];
 function parent(){
  const days=Object.keys(S.time).sort().reverse().slice(0,14);
  const L=TT().map(x=>Object.assign({},x));const total=L.reduce((a,b)=>a+b.min,0);
@@ -1954,6 +2067,7 @@ function parent(){
   ・「理科・社会（日がわり）」のコマは、日によって理科と社会が交互に入ります。ゲームのコマは日ごとに種類が変わります。<br>
   ・理科・社会・英語は基礎知識がなくても進められるよう、キャラクターの会話、さわって確かめる図、「やってみよう（家でできる観察・体験）」、読み終えるともらえる「ふしぎカード」（豆知識）を入れています。英語はカードや問題の音声を聞いて進めます。<br>
   ・間違えた問題は自動で「ふくしゅう」に入り、正解すると消えます。勉強時間は教科書・問題・ゲームの画面を開いている間だけ数えます。記録はこのiPadのブラウザ内にだけ保存されます。</p></div>
+  ${linkPanel()}
   <div class="panel"><b>時間わりの設定</b><p class="muted">コマの教科と時間を変えられます。合計 <b id="tttot">${total}</b> 分（目安 180分）</p>
    <div class="stack" style="gap:8px" id="ttlist">${L.map((x,i)=>`<div class="ttrow"><span>${i+1}</span><select data-k="${i}">${SLOTOPT.map(k=>`<option value="${k}" ${x.k===k?'selected':''}>${P(SLOT[k].name)}</option>`).join('')}</select><select data-m="${i}">${[10,15,20,25,30,40].map(m=>`<option ${x.min===m?'selected':''}>${m}</option>`).join('')}</select><button class="btn small ghost" data-del="${i}">削除</button></div>`).join('')}</div>
    <div class="row"><button class="btn small" id="ttadd">コマを追加</button><button class="btn small go" id="ttsave">保存する</button><button class="btn small ghost" id="ttdef">おすすめに戻す</button><span id="ttmsg" class="muted"></span></div></div>
@@ -1968,7 +2082,7 @@ function parent(){
   <div class="panel"><b>まちがえた問題（新しい順）</b>${S.miss.length?`<div class="tbl"><table><thead><tr><th>日付</th><th>問題</th><th>正しい答え</th><th>入力</th></tr></thead><tbody>${S.miss.slice(0,40).map(m=>`<tr><td>${m.d||''}</td><td style="white-space:normal;min-width:220px">${esc(m.text)}</td><td>${esc(m.ansText)}</td><td>${esc(m.u||'')}</td></tr>`).join('')}</tbody></table></div>`:'<p class="muted">ありません。</p>'}</div>
   <div class="panel"><b>記録のリセット</b><p class="muted">名前と時間わりの設定以外の記録（コイン・レベル・進み具合）を消します。</p><div class="row"><button class="btn red" id="rst">リセットする</button><span id="rstc"></span></div></div>
  </div>`;
- bindBack(home);
+ bindBack(home);bindLink();
  const tot=()=>{$('#tttot').textContent=L.reduce((a,b)=>a+b.min,0);};
  $$('[data-k]').forEach(s=>s.onchange=()=>{L[+s.dataset.k].k=s.value;});
  $$('[data-m]').forEach(s=>s.onchange=()=>{L[+s.dataset.m].min=+s.value;tot();});
@@ -1992,6 +2106,7 @@ new MutationObserver(()=>fixRuby(app)).observe(app,{childList:true,subtree:true}
 
 /* 起動 */
 if(!S.name)nameScreen(home);else home();
+syncSoon(2500);
 </script>
 
 </body>

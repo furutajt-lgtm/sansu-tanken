@@ -1,0 +1,51 @@
+/**
+ * まなびたんけん 保護者連携（Google Apps Script）
+ * iPadのアプリが学習記録を送信し、保護者はスマホでこのWebアプリを開いて確認・設定する。
+ * 初回だけ setup() を実行し、ログに出るURLとキーを使う。
+ */
+function props_(){return PropertiesService.getScriptProperties();}
+function key_(){var p=props_();var k=p.getProperty('KEY');if(!k){k=Utilities.getUuid().replace(/-/g,'').slice(0,10);p.setProperty('KEY',k);}return k;}
+function ss_(){var p=props_();var id=p.getProperty('SSID');if(id){try{return SpreadsheetApp.openById(id);}catch(e){}}
+  var ss=SpreadsheetApp.create('まなびたんけん 学習記録');p.setProperty('SSID',ss.getId());return ss;}
+function sheet_(name,header){var ss=ss_();var sh=ss.getSheetByName(name);
+  if(!sh){sh=ss.insertSheet(name);if(header){sh.getRange(1,1,1,header.length).setValues([header]).setFontWeight('bold');sh.setFrozenRows(1);}
+    var d=ss.getSheetByName('シート1')||ss.getSheetByName('Sheet1');if(d&&ss.getSheets().length>1)ss.deleteSheet(d);}
+  return sh;}
+function setup(){var k=key_();ss_();sheet_('daily',['日付','勉強時間(分)','時間わり完了','テスト点数','テスト問題数','正答率','レベル']);sheet_('tests',['日付','点数','問題数','正答率','教科別']);sheet_('store');
+  Logger.log('キー: '+k);Logger.log('スプレッドシート: '+ss_().getUrl());}
+function out_(o){return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);}
+function store_(){return sheet_('store');}
+function getSettings_(){var v=store_().getRange('B1').getValue();return v?JSON.parse(v):{};}
+
+function doPost(e){
+  var b;try{b=JSON.parse(e.postData.contents);}catch(err){return out_({ok:false,err:'json'});}
+  if(b.key!==key_())return out_({ok:false,err:'key'});
+  var lock=LockService.getScriptLock();lock.waitLock(15000);
+  try{
+    if(b.snapshot){var st=store_();st.getRange('A1').setValue(JSON.stringify(b.snapshot));st.getRange('C1').setValue(new Date());writeDaily_(b.snapshot);}
+  }finally{lock.releaseLock();}
+  return out_({ok:true,settings:getSettings_()});
+}
+function writeDaily_(s){
+  var sh=sheet_('daily',['日付','勉強時間(分)','時間わり完了','テスト点数','テスト問題数','正答率','レベル']);
+  var data=sh.getDataRange().getValues();var idx={};for(var i=1;i<data.length;i++){idx[String(data[i][0])]=i+1;}
+  (s.days||[]).forEach(function(d){
+    var t=(s.tests||[]).filter(function(x){return x.d===d.d;})[0];
+    var row=[d.d,Math.round(d.sec/60),d.slots||'',t?t.score:'',t?t.total:'',t?Math.round(t.score/t.total*100)+'%':'',d.d===s.today.d?s.level:''];
+    if(idx[d.d])sh.getRange(idx[d.d],1,1,row.length).setValues([row]);else{sh.appendRow(row);idx[d.d]=sh.getLastRow();}
+  });
+  var ts=sheet_('tests',['日付','点数','問題数','正答率','教科別']);var td=ts.getDataRange().getValues();var have={};for(var j=1;j<td.length;j++)have[String(td[j][0])]=1;
+  (s.tests||[]).forEach(function(t){if(have[t.d])return;var by=Object.keys(t.by||{}).map(function(k){return k+':'+t.by[k][0]+'/'+t.by[k][1];}).join(' ');ts.appendRow([t.d,t.score,t.total,Math.round(t.score/t.total*100)+'%',by]);});
+}
+
+function doGet(e){
+  var p=(e&&e.parameter)||{};
+  if(p.action==='settings'){if(p.key!==key_())return out_({ok:false,err:'key'});return out_({ok:true,settings:getSettings_()});}
+  if(p.key!==key_())return HtmlService.createHtmlOutput('<p style="font:18px sans-serif;padding:20px">リンクが正しくありません。キーつきのリンクから開いてください。</p>');
+  var t=HtmlService.createTemplateFromFile('Dashboard');t.key=p.key;t.url=ScriptApp.getService().getUrl();
+  return t.evaluate().setTitle('まなびたんけん 保護者ページ').addMetaTag('viewport','width=device-width, initial-scale=1');
+}
+/* ダッシュボードから呼ぶ */
+function getData(key){if(key!==key_())throw new Error('キーが違います');var st=store_();var s=st.getRange('A1').getValue();var at=st.getRange('C1').getValue();
+  return {snap:s?JSON.parse(s):null,at:at?Utilities.formatDate(new Date(at),'Asia/Tokyo','M/d HH:mm'):'',settings:getSettings_(),sheet:ss_().getUrl()};}
+function saveSettings(key,obj){if(key!==key_())throw new Error('キーが違います');obj.updated=new Date().toISOString();store_().getRange('B1').setValue(JSON.stringify(obj));return obj;}
