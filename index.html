@@ -1147,7 +1147,9 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 
 /* ===== なまえ ===== */
 function nameScreen(after){
- app.innerHTML=`<div class="result" style="margin-top:20px"><div style="width:150px">${OWL()}</div><h2>はじめまして! ぼくは ホーちゃん</h2><p>きみの なまえを おしえてね。</p><input id="nm" class="namebox" maxlength="10" autocomplete="off" value="${esc(S.name)}" aria-label="なまえ"><button class="btn primary" id="ok">けってい</button></div>`;
+ app.innerHTML=`<div class="homebg" aria-hidden="true"></div><div class="home nmscr"><div class="hrib"><span>まなび<em>たんけん</em></span></div>
+ <div class="nmhero"><div class="hguide nmguide">${gimg('guide_smile','gface','owl')}</div><div class="hsay nmsay"><p>はじめまして! わたしは リボン。</p><p>いっしょに まいにち ぼうけんしようね。</p><p>あなたの なまえを おしえてね。</p></div></div>
+ <div class="hmain nmcard"><input id="nm" class="namebox nmbox" maxlength="10" autocomplete="off" placeholder="なまえ" value="${esc(S.name)}" aria-label="なまえ"><button class="hgo" id="ok">けってい</button></div></div>`;
  $('#ok').onclick=()=>{const v=$('#nm').value.trim();if(!v){$('#nm').focus();return;}S.name=esc(v);save();SND.fan();(after||home)();};
 }
 
@@ -1404,6 +1406,15 @@ html:has(.homebg),body:has(.homebg){background:#F8F5FF}
 .restgirl{width:min(260px,70%)}.restgirl img{width:100%;display:block}.restgirl svg{width:50%}
 .clrgirl{width:min(200px,60%)}.clrgirl img{width:100%;display:block}
 @media(max-width:520px){.hhero{grid-template-columns:36% 1fr}.hsubj{gap:5px}.hst{min-height:100px}.hst b{font-size:.78em}.hdress{grid-template-columns:90px 1fr}.htr{width:90px;height:90px}.hrib span{font-size:16px}.hgo{font-size:21px}}
+.nmscr{max-width:640px;margin:0 auto;padding-top:24px;gap:10px;align-items:stretch}
+.nmhero{display:flex;flex-direction:column;align-items:center;gap:0}
+.nmguide{width:min(400px,66%);max-height:none;aspect-ratio:640/720}
+.nmsay{width:100%;text-align:center;margin-top:-4px;font-size:1.2em;position:relative;z-index:2}.nmsay p{margin:.1em 0}
+.nmsay:before{left:50%;bottom:auto;top:-12px;margin-left:-9px;border:9px solid transparent;border-bottom-color:var(--sak);border-top:0;border-right-color:transparent}
+.nmcard{align-items:stretch}
+.nmbox{border:3px solid var(--lav);border-radius:999px;background:#fff;color:var(--tx);max-width:none;width:100%;font-size:26px;font-weight:900;padding:.45em .8em;outline:0;box-shadow:inset 0 2px 0 #EFE7FB}
+.nmbox:focus{border-color:var(--gold)}
+@media(max-width:520px){.nmguide{width:min(230px,60%)}}
 </style>
 <script>
 /* ===== 休けい ===== */
