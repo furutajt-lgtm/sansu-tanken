@@ -1215,26 +1215,45 @@ function runSlot(i,b){const done=()=>finishSlot(i),k=slotSubj(b.k),bk=()=>ttScre
 }
 
 /* ===== ホーム ===== */
-const CHEER=['きょうも いっしょに たんけん しよう!','まちがえても だいじょうぶ。まちがいは つよく なる チャンス!','こまったら「よみあげ」ボタンで {聞|き}いてね。','コインを ためて ぼくを きせかえてね!','{休|やす}けいも だいじな {勉強|べんきょう}の {一|ひと}つだよ。','ふしぎカードを {全部|ぜんぶ} あつめられるかな?'];
+const CHEER=['きょうも いっしょに やろうね。','まちがえても だいじょうぶ。まちがいは つよく なる チャンスだよ。','こまったら「よみあげ」ボタンで {聞|き}いてね。','コインを ためて、いっしょに おしゃれしようね。','{休|やす}むのも だいじな {勉強|べんきょう}だよ。','ふしぎカードを ぜんぶ あつめたいな。'];
+const CHEER2=['いいかんじ。あと ちょっとだよ。','ひとつ できたね。つぎも いっしょに がんばろう。','その ちょうし。{見|み}てると うれしいな。'];
+const CHEER3=['わあ、ぜんぶ できたね。すごいよ。','きょうは よく がんばったね。ゆっくり {休|やす}んでね。'];
+const HIMG=n=>`home/${n}.webp`;
+function imgFail(el){const fb=el.getAttribute('data-fb');if(fb==='owl'&&el.parentNode){el.parentNode.innerHTML=OWL();}else{el.style.display='none';}}
+const gimg=(n,cls,fb,alt)=>`<img class="${cls||''}" src="${HIMG(n)}" alt="${alt||''}" data-fb="${fb||''}" onerror="imgFail(this)" draggable="false">`;
+const HFLOWER=(c1,c2)=>`<svg viewBox="0 0 40 40" aria-hidden="true"><g fill="${c1}">${[0,72,144,216,288].map(a=>`<ellipse cx="20" cy="9.5" rx="6.2" ry="8.2" transform="rotate(${a} 20 20)"/>`).join('')}</g><circle cx="20" cy="20" r="5.6" fill="${c2}"/></svg>`;
+const HSTAR=c=>`<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 4l4.6 10.2 11 1.1-8.3 7.4 2.5 10.9L20 27.8 10.2 33.6l2.5-10.9L4.4 15.3l11-1.1z" fill="${c}" stroke="#E2D6F3" stroke-width="2" stroke-linejoin="round"/></svg>`;
+const SUBJIMG={math:'subject_math',jp:'subject_japanese',sci:'subject_science',soc:'subject_social',eng:'subject_english'};
+const SUBJBG={math:'#B7E4D0',jp:'#F3B6C8',sci:'#B6DBA4',soc:'#F5C49A',eng:'#B5D6F3'};
+function homeWeek(){const wd=['にち','げつ','か','すい','もく','きん','ど'];
+ const days=[6,5,4,3,2,1,0].map(o=>{const k=dayKey(o),st=(S.stamps&&S.stamps[k])||[],d=new Date(Date.now()-o*864e5),n=st.length;
+  return `<div class="hwd ${o===0?'td':''} ${n?'on':''}"><small>${wd[d.getDay()]}</small><span class="fl">${n?HFLOWER('#F7A8C4','#F8B84D'):HFLOWER('#EEE8F7','#E3DCF0')}</span></div>`;}).join('');
+ return `<div class="hweek"><div class="hrow"><b class="disp">${R('がんばり カレンダー')}</b><span class="hchip">${R(`つづけて ${komaStreak()}{日|にち}`)}</span></div><div class="hwrow">${days}</div><div class="hnote">${R('コマを クリアすると はなが さくよ。3{日|か} つづけると チケット 1まい。')}</div></div>`;}
 function home(){
- const t=S.time[today()]||0,L=TT(),dn=todayDone(),total=L.reduce((a,b)=>a+b.min,0),cnt=L.filter((_,i)=>dn[i]).length;
- app.innerHTML=statusBar()+`
- <div class="hero"><div class="partner">${OWL()}</div><div><h1 class="title disp">まなび<span>たんけん</span></h1><div class="say">${R(pick(CHEER))}</div></div></div>
+ const L=TT(),dn=todayDone(),total=L.reduce((a,b)=>a+b.min,0),t=S.time[today()]||0;
+ let idx=L.map((b,i)=>i).filter(i=>['math','jp','sci','soc','eng','scisoc','rot1','rot2'].includes(L[i].k));
+ if(!idx.length)idx=L.map((b,i)=>i).filter(i=>L[i].k!=='rest');
+ const cnt=idx.filter(i=>dn[i]).length,allDone=L.every((_,i)=>L[i].k==='rest'||dn[i]),some=L.some((_,i)=>dn[i])||(S.koma&&S.koma.d===today()&&S.koma.done&&S.koma.done.length);
+ const face=allDone?'surprise':some?'cheer':'smile',say=allDone?pick(CHEER3):some?pick(CHEER2):pick(CHEER);
+ const v=lvInfo(S.xp),own=ALLITEMS.filter(i=>DR_().own[i.id]).length;
+ const marks=idx.map((i,j)=>`<span class="slotm ${dn[i]?'on':''}">${dn[i]?HFLOWER('#F7A8C4','#F8B84D'):HSTAR('#F1ECFA')}<small>${j+1}</small></span>`).join('');
+ app.innerHTML=`<div class="homebg" aria-hidden="true"></div><div class="home">
+ <div class="hstat"><span class="hlv"><b>Lv.${v.l}</b><span class="hx"><i style="width:${v.rest/v.need*100}%"></i></span></span><span class="hcoin">${COIN} ${S.coins}</span></div>
+ <div class="hhero"><div class="hguide">${gimg('guide_'+face,'gface','owl')}</div><div class="hright"><div class="hrib"><span>まなび<em>たんけん</em></span></div><div class="hsay">${R(say)}</div></div></div>
  ${SET().msg?`<div class="pmsg"><span style="width:44px;flex:none">${FACE.kid()}</span><span>${R('おうちの{人|ひと}から: ')}${esc(SET().msg)}</span></div>`:''}
- <button class="tcard ${testDone()?'done':''}" id="dtest"><div><div class="disp">${R('きょうの テスト')}</div><div style="font-weight:700">${testDone()?R(`${testDone().score}/${testDone().total} せいかい ・ けっかを {見|み}る`):R(`まずは テストで ちからだめし(${SET().testN||15}{問|もん})`)}</div></div><span class="chip">${testDone()?'クリア':'まだ'}</span></button>
- <button class="today" id="today"><div><div class="muted" style="color:#C9DCE3">${R('@nameさんの')}</div><div class="disp">きょうの {時間|じかん}わり ${cnt}/${L.length}</div><div style="font-size:.8em">{勉強|べんきょう} ${R(jpT(t))} / ${R(jpT(total*60))}</div><div class="tbar"><i style="width:${Math.min(100,t/(total*60)*100)}%"></i></div></div><span class="go">はじめる</span></button>
- ${weekCard()}
- <button class="dtile" id="dress"><div>${avatar(curEq())}</div><div><div class="disp">きせかえルーム</div><div style="font-weight:700">${R('コインで ふくや かみがたを あつめよう')}</div><div class="muted">${R(`あつめた アイテム ${ALLITEMS.filter(i=>DR_().own[i.id]).length} / ${ALLITEMS.length}`)}</div>${S.tk?`<div class="chip" style="margin-top:4px">${TICKET} ${R(`チケット ${S.tk}まい`)}</div>`:''}</div></button>
- <div class="menu" style="margin-bottom:14px">${SUBJ.map(s=>{const secs=subjSecs(s.id),d=secs.filter(x=>S.sec[x]).length;return `<button class="mbtn" data-s="${s.id}" style="--ac:${s.color}"><span class="ic">${IC[s.icon]}</span><span><b>${R(s.name)}</b><small>{教科書|きょうかしょ} ${d}/${secs.length}</small></span></button>`;}).join('')}</div>
- <div class="menu">
-  ${mb('map','#3E9AB5','たからの {地図|ちず}','すすみぐあい')}
-  ${mb('game','#E4684F','ゲーム','ラッシュで スピード しょうぶ')}
-  ${mb('boss','#7A5BB5','ボスバトル','{教科|きょうか}の ボスを たおせ')}
-  ${mb('review','#C27A2C','ふくしゅう',`まちがえた {問題|もんだい} ${S.miss.length}{問|もん}`)}
-  ${mb('shop','#F4B63A','ホーちゃん ショップ','ホーちゃんを きせかえ')}
-  ${mb('zukan','#8C6A4A','ずかん','ふしぎカードと メダル')}
- </div>
- <div class="row" style="margin-top:18px"><button class="btn ghost" id="parent">おうちの{方|かた}へ・せってい</button></div>`;
+ <div class="hmain"><div class="hmt"><span class="disp">${R('きょうの {時間|じかん}わり')}</span><span class="hchip">${cnt} / ${idx.length} コマ</span></div>
+  <div class="hslots">${marks}</div>
+  <div class="hmeta">${R(`@nameさんの {勉強|べんきょう} ${jpT(t)} / ${jpT(total*60)}`)}</div>
+  <div class="tbar hbar"><i style="width:${Math.min(100,t/(total*60)*100)}%"></i></div>
+  <button class="hgo" id="today"><span>${R(some&&!allDone?'つづきから はじめる':allDone?'きょうの {時間|じかん}わりを みる':'きょうの ぼうけんを はじめる')}</span></button></div>
+ <button class="htest ${testDone()?'done':''}" id="dtest"><div><div class="disp">${R(testDone()?'できたね!':'きょうの おさらいテスト')}</div><div class="hsub">${testDone()?R(`${testDone().score}/${testDone().total} せいかい ・ けっかを {見|み}る`):R(`ちからだめし(${SET().testN||15}{問|もん})`)}</div></div><span class="hchip">${testDone()?'クリア':'まだ'}</span></button>
+ ${homeWeek()}
+ <div class="hsec disp">${R('きょうは なにを まなぶ?')}</div>
+ <div class="hsubj">${SUBJ.map(s=>{const secs=subjSecs(s.id),d=secs.filter(x=>S.sec[x]).length;return `<button class="hst" data-s="${s.id}" style="--bg:${SUBJBG[s.id]||'#eee'}"><span class="hic">${gimg(SUBJIMG[s.id],'','',s.name)}</span><b>${R(s.name)}</b><small>${d}/${secs.length}</small></button>`;}).join('')}</div>
+ <button class="hdress" id="dress">${gimg('reward_treasure','htr','')}<div><div class="disp">${R('きせかえルーム')}</div><div class="hsub">${R('コインを あつめて おしゃれしよう')}</div><div class="hsub">${R(`あつめた アイテム ${own} / ${ALLITEMS.length}`)}</div>${S.tk?`<div class="hchip" style="margin-top:4px">${TICKET} ${R(`チケット ${S.tk}まい`)}</div>`:''}</div></button>
+ <div class="hsec disp">${R('もっと あそぶ・たんけんする')}</div>
+ <div class="hmenu">${hm('map','map','たからの {地図|ちず}')}${hm('game','game','ゲーム')}${hm('boss','boss','ボスバトル')}${hm('review','review',`ふくしゅう`,S.miss.length?S.miss.length+'{問|もん}':'')}${hm('shop','shop','ショップ')}${hm('zukan','collection','ずかん')}</div>
+ <div class="row" style="margin-top:22px"><button class="btn ghost hparent" id="parent">${R('おうちの{方|かた}へ')}</button></div></div>`;
  $('#today').onclick=()=>go(ttScreen);
  $('#dtest').onclick=()=>{SND.tap();startDailyTest(()=>go(home),home);};
  $('#dress').onclick=()=>{SND.tap();go(dressRoom);};
@@ -1243,6 +1262,7 @@ function home(){
  $$('[data-m]').forEach(b=>b.onclick=()=>{SND.tap();go(act[b.dataset.m]);});
  $('#parent').onclick=()=>go(parent);
 }
+function hm(id,img,t,badge){return `<button class="hmb" data-m="${id}"><span class="hic">${gimg('menu_'+img,'','',t)}</span><b>${R(t)}</b>${badge?`<small>${R(badge)}</small>`:''}</button>`;}
 function mb(id,col,t,s){return `<button class="mbtn" data-m="${id}" style="--ac:${col}"><span class="ic">${IC[id]}</span><span><b>${R(t)}</b><small>${R(s)}</small></span></button>`;}
 
 /* ===== 教科の ページ ===== */
@@ -1314,7 +1334,7 @@ function komaClear(i,b,k){const K=S.koma;
  const roll=Math.random();const coins=roll<.1?80:roll<.4?40:20;S.tk=(S.tk||0)+1;S.coins+=coins;
  S.stamps=S.stamps||{};const firstToday=!(S.stamps[today()]||[]).length;S.stamps[today()]=(S.stamps[today()]||[]).concat(k);
  const stk=komaStreak(),bonus=firstToday&&stk>0&&stk%3===0;if(bonus)S.tk++;save();
- app.innerHTML=`<div class="result"><svg class="chest wob" id="box" viewBox="0 0 180 160"><rect x="20" y="70" width="140" height="80" rx="10" fill="#C27A2C"/><path d="M20 80 Q20 30 90 30 Q160 30 160 80Z" fill="#E09A45"/><rect x="20" y="74" width="140" height="10" fill="#F4B63A"/><rect x="78" y="70" width="24" height="30" rx="4" fill="#F4B63A"/><circle cx="90" cy="86" r="4" fill="#8A5A3B"/></svg>
+ app.innerHTML=`<div class="result"><div class="clrgirl">${gimg('guide_surprise','','')}</div><svg class="chest wob" id="box" viewBox="0 0 180 160"><rect x="20" y="70" width="140" height="80" rx="10" fill="#C27A2C"/><path d="M20 80 Q20 30 90 30 Q160 30 160 80Z" fill="#E09A45"/><rect x="20" y="74" width="140" height="10" fill="#F4B63A"/><rect x="78" y="70" width="24" height="30" rx="4" fill="#F4B63A"/><circle cx="90" cy="86" r="4" fill="#8A5A3B"/></svg>
  <h2>${R(SLOT[k].name)}の コマ クリア!</h2>
  <div class="kgot"><div><span class="big">${COIN} +${coins}</span><small>コイン</small></div><div><span class="big">${TICKET} +1</span><small>${R('きせかえ たからばこ チケット')}</small></div></div>
  ${bonus?`<p class="pmsg" style="justify-content:center">${R(`${stk}{日|にち} つづけた ボーナス! チケット もう 1まい`)}</p>`:''}
@@ -1334,12 +1354,63 @@ function weekCard(){const wd=['にち','げつ','か','すい','もく','きん'
   return `<div class="wd ${o===0?'td':''}"><small>${wd[d.getDay()]}</small><span class="sp">${st.slice(0,4).map(s=>`<i style="background:${SLOT[s]?SLOT[s].color:'#ccc'}"></i>`).join('')||'<i class="no"></i>'}</span></div>`;}).join('');
  return `<div class="week"><div class="row between"><b>${R('がんばり カレンダー')}</b><span class="chip">${R(`つづけて ${komaStreak()}{日|にち}`)}</span></div><div class="wrow">${days}</div><div class="muted" style="font-size:.8em">${R('コマを クリアすると シールが つくよ。3{日|か} つづけるごとに チケット 1まい プレゼント。')}</div></div>`;}
 </script>
+<style>
+html:has(.homebg),body:has(.homebg){background:#F8F5FF}
+.homebg{position:fixed;inset:0;z-index:0;background:#F8F5FF url(home/home_background.webp) center top/cover no-repeat}
+.home{position:relative;z-index:1;--lav:#C6B1E8;--sak:#F7D8E4;--card:#FFFDF9;--gold:#F8B84D;--tx:#34435A;color:var(--tx);display:flex;flex-direction:column;gap:14px}
+.home .disp{color:var(--tx)}
+.hchip{display:inline-flex;align-items:center;gap:6px;background:#EFE7FB;border-radius:999px;padding:.1em .8em;font-weight:900;white-space:nowrap;font-size:.85em}
+.hsub{font-weight:700;font-size:.85em;line-height:1.5}
+.hstat{display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(255,253,249,.88);border-radius:999px;padding:6px 8px 6px 8px;min-height:48px}
+.hlv{display:flex;align-items:center;gap:10px;flex:1}
+.hlv b{background:var(--lav);color:#34435A;border-radius:999px;padding:.05em .8em;font-family:"Mochiy Pop One",sans-serif;font-weight:400;font-size:.9em}
+.hx{flex:1;max-width:220px;height:12px;background:#EAE3F5;border-radius:99px;overflow:hidden}.hx i{display:block;height:100%;background:var(--lav);border-radius:99px}
+.hcoin{display:inline-flex;align-items:center;gap:6px;background:#FFF1D1;border-radius:999px;padding:.1em .9em;font-weight:900;color:#8A5A10;min-height:36px}.hcoin svg{width:24px;height:24px}
+.hhero{display:grid;grid-template-columns:minmax(150px,34%) 1fr;gap:6px;align-items:end}
+.hguide{aspect-ratio:640/720;max-height:300px;display:flex;align-items:flex-end;justify-content:center}
+.hguide .gface{width:100%;height:100%;object-fit:contain;object-position:bottom}.hguide svg{width:80%}
+.hright{display:flex;flex-direction:column;gap:10px;align-items:stretch;padding-bottom:14px}
+.hrib{background:url(home/title_ribbon.webp) center/100% 100% no-repeat;aspect-ratio:800/240;display:grid;place-items:center;width:100%;max-width:520px;margin:0 auto;min-height:70px;padding:0 12%}
+.hrib span{font-family:"Mochiy Pop One",sans-serif;font-size:clamp(17px,3.3vw,28px);color:#5B4A8A;text-shadow:0 1px 0 #fff,0 0 6px #fff;white-space:nowrap}.hrib em{font-style:normal;color:#D4668F}
+.hsay{position:relative;background:var(--card);border:3px solid var(--sak);border-radius:22px;padding:.55em .9em;font-weight:700;line-height:1.6;box-shadow:0 3px 0 #E9D3E8}
+.hsay:before{content:"";position:absolute;left:-14px;bottom:22px;border:9px solid transparent;border-right-color:var(--sak);border-left:0}
+.hmain{background:linear-gradient(160deg,#FFFDF9,#F1EAFB);border:3px solid var(--lav);border-radius:30px;padding:18px 18px 20px;box-shadow:0 6px 0 #DCCFF0;display:flex;flex-direction:column;gap:12px}
+.hmt{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.hmt .disp{font-size:clamp(24px,4.6vw,32px)}
+.hslots{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.slotm{display:flex;flex-direction:column;align-items:center;background:#fff;border:2px dashed #DCCFF0;border-radius:20px;padding:8px 0 4px;min-height:84px}
+.slotm.on{border:2px solid var(--sak);background:#FFF3F8}.slotm svg{width:46px;height:46px}.slotm small{font-weight:900;font-size:.75em}
+.hmeta{font-weight:700;font-size:.9em}.hbar{height:14px;background:#EAE3F5}.hbar i{background:var(--lav)}
+.hgo{border:0;background:linear-gradient(180deg,#FFCB6B,var(--gold));color:#34435A;border-radius:26px;min-height:76px;padding:12px 18px;font-family:"Mochiy Pop One",sans-serif;font-size:clamp(22px,4.4vw,30px);box-shadow:0 6px 0 #D9902B;width:100%;line-height:1.35}
+.hgo:active{transform:translateY(5px);box-shadow:0 1px 0 #D9902B}
+.htest{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;border:2px solid var(--sak);text-align:left;border-radius:22px;background:var(--card);padding:12px 18px;min-height:64px;color:var(--tx);width:100%}
+.htest .disp{font-size:clamp(18px,3.4vw,22px)}.htest.done{background:#F1FAF5;border-color:#BFE3CF}
+.hweek{background:rgba(255,253,249,.94);border-radius:24px;padding:12px 14px}
+.hrow{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}.hrow .disp{font-size:1.05em}
+.hwrow{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.hwd{display:flex;flex-direction:column;align-items:center;border-radius:16px;padding:4px 0}.hwd small{font-weight:900;font-size:.7em}.hwd .fl svg{width:38px;height:38px;display:block}
+.hwd.td{outline:3px solid #E8A9C6;background:#FFF3F8}.hnote{font-size:.75em;font-weight:700;margin-top:6px;line-height:1.5}
+.hsec{font-size:clamp(20px,3.8vw,26px);margin-top:6px;padding-left:4px;text-shadow:0 0 6px #fff,0 0 3px #fff}
+.hsubj{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.hst,.hmb{border:0;background:var(--card);border-radius:22px;padding:8px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:112px;color:var(--tx);box-shadow:0 4px 0 #E4DBF2}
+.hst{background:linear-gradient(180deg,var(--bg),#FFFDF9 78%)}
+.hst:active,.hmb:active,.hdress:active{transform:translateY(3px)}
+.hic{width:min(84px,100%);aspect-ratio:1;display:block}.hic img{width:100%;height:100%;object-fit:contain;display:block}
+.hst b,.hmb b{font-size:.9em;line-height:1.3}.hst small,.hmb small{font-weight:900;font-size:.7em;color:#6B5B95}
+.hdress{display:grid;grid-template-columns:130px 1fr;gap:14px;align-items:center;border:2px solid var(--sak);border-radius:28px;background:linear-gradient(120deg,#FFEAF2,#EFE8FC);padding:10px 18px;text-align:left;color:var(--tx);width:100%;box-shadow:0 5px 0 #E9D3E8;min-height:120px}
+.htr{width:130px;height:130px;object-fit:contain}.hdress .disp{font-size:clamp(20px,3.8vw,26px)}
+.hmenu{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.hmb{min-height:118px;background:rgba(255,253,249,.94)}.hmb .hic{width:min(72px,100%)}
+.hparent{font-size:.8em;min-height:44px;opacity:.85}
+.restgirl{width:min(260px,70%)}.restgirl img{width:100%;display:block}.restgirl svg{width:50%}
+.clrgirl{width:min(200px,60%)}.clrgirl img{width:100%;display:block}
+@media(max-width:520px){.hhero{grid-template-columns:36% 1fr}.hsubj{gap:5px}.hst{min-height:100px}.hst b{font-size:.78em}.hdress{grid-template-columns:90px 1fr}.htr{width:90px;height:90px}.hrib span{font-size:16px}.hgo{font-size:21px}}
+</style>
 <script>
 /* ===== 休けい ===== */
 function rest(min,onDone,teaser){
  MODE='rest';let left=min*60,over=0;
  const stretch=['{両手|りょうて}を {上|うえ}に のばして 5つ かぞえよう','かたを {前|まえ}に 3{回|かい}、{後|うし}ろに 3{回|かい} まわそう','まどの {外|そと}の いちばん {遠|とお}くを 20びょう {見|み}よう','{水|みず}か お{茶|ちゃ}を コップ 1ぱい のもう','その{場|ば}で 10{回|かい} ジャンプ しよう'];
- app.innerHTML=`<div class="rest"><div style="width:140px" class="restowl">${OWL()}</div><h2>{休|やす}けい タイム</h2><div class="t" id="rt">${min}:00</div>
+ app.innerHTML=`<div class="rest"><div class="restgirl restowl">${gimg('guide_sleepy','','owl')}</div><h2>{休|やす}けい タイム</h2><div class="t" id="rt">${min}:00</div>
  <p class="muted" style="margin:0">${R('タブレットも スマホも おいて、からだと {目|め}を {休|やす}めよう。')}</p>
  <ul>${stretch.map(x=>`<li>${x}</li>`).join('')}<li>トイレに {行|い}って おこう</li></ul>
  ${teaser?`<div class="teaser"><div class="muted">${R(`このあとの コマ: ${SLOT[teaser.k].name}`)}</div><div class="disp">${R(teaser.title)}</div>${teaser.q?`<div style="font-weight:700">${R('わかる ひみつ: '+teaser.q)}</div>`:''}</div>`:''}
