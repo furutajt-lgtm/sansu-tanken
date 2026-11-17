@@ -1,0 +1,1759 @@
+{
+"canvas": [
+1024,
+1536
+],
+"items": [
+{
+"id": "body_light",
+"cat": "body",
+"name": "そざい（うすはだ）",
+"rar": "N",
+"ser": "casual",
+"tags": [
+"casual"
+],
+"file": "body_light.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "face_pink",
+"cat": "face",
+"name": "ピンクのひとみ",
+"rar": "N",
+"ser": "sweet",
+"tags": [
+"cute",
+"sweet"
+],
+"file": "face_pink.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "face_blue",
+"cat": "face",
+"name": "あおいひとみ",
+"rar": "N",
+"ser": "marine",
+"tags": [
+"cute",
+"marine"
+],
+"file": "face_blue.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "face_smile",
+"cat": "face",
+"name": "にっこりえがお",
+"rar": "N",
+"ser": "casual",
+"tags": [
+"casual",
+"pop"
+],
+"file": "face_smile.webp",
+"adj": [
+0,
+0,
+1
+],
+"noeye": true
+},
+{
+"id": "face_wink",
+"cat": "face",
+"name": "ウインク",
+"rar": "R",
+"ser": "idol",
+"tags": [
+"pop",
+"cute"
+],
+"file": "face_wink.webp",
+"adj": [
+0,
+0,
+1
+],
+"noeye": true
+},
+{
+"id": "face_shy",
+"cat": "face",
+"name": "はずかしがり",
+"rar": "R",
+"ser": "sweet",
+"tags": [
+"cute",
+"sweet"
+],
+"file": "face_shy.webp",
+"adj": [
+0,
+0,
+1
+],
+"noeye": true
+},
+{
+"id": "face_cool",
+"cat": "face",
+"name": "クールなかお",
+"rar": "SR",
+"ser": "gothic",
+"tags": [
+"dark",
+"elegant"
+],
+"file": "face_cool.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hair_long",
+"cat": "hair",
+"name": "ストレートロング",
+"rar": "N",
+"ser": "casual",
+"tags": [
+"casual",
+"elegant"
+],
+"file": "hair_long_b.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hair_twin",
+"cat": "hair",
+"name": "ツインテール",
+"rar": "N",
+"ser": "idol",
+"tags": [
+"pop",
+"cute"
+],
+"file": "hair_twin_b.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hair_pony",
+"cat": "hair",
+"name": "ポニーテール",
+"rar": "N",
+"ser": "school",
+"tags": [
+"school",
+"casual"
+],
+"file": "hair_pony_b.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hair_bob",
+"cat": "hair",
+"name": "ボブ",
+"rar": "N",
+"ser": "school",
+"tags": [
+"school",
+"cute"
+],
+"file": "hair_bob_b.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hair_wave",
+"cat": "hair",
+"name": "ゆるふわウェーブ",
+"rar": "R",
+"ser": "sweet",
+"tags": [
+"sweet",
+"cute"
+],
+"file": "hair_wave_b.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hair_drill",
+"cat": "hair",
+"name": "ドリルツイン",
+"rar": "SR",
+"ser": "sweet",
+"tags": [
+"sweet",
+"elegant"
+],
+"file": "hair_drill_b.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hair_hime",
+"cat": "hair",
+"name": "ひめカット",
+"rar": "SR",
+"ser": "gothic",
+"tags": [
+"dark",
+"elegant"
+],
+"file": "hair_hime_b.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hair_half",
+"cat": "hair",
+"name": "ハーフアップ",
+"rar": "R",
+"ser": "princess",
+"tags": [
+"elegant",
+"cute"
+],
+"file": "hair_half_b.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hair_side",
+"cat": "hair",
+"name": "サイドテール",
+"rar": "R",
+"ser": "pop",
+"tags": [
+"pop",
+"casual"
+],
+"file": "hair_side_b.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hair_braid",
+"cat": "hair",
+"name": "みつあみ",
+"rar": "R",
+"ser": "nature",
+"tags": [
+"nature",
+"cute"
+],
+"file": "hair_braid_b.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hair_bun",
+"cat": "hair",
+"name": "おだんご",
+"rar": "R",
+"ser": "wa",
+"tags": [
+"wa",
+"cute"
+],
+"file": "hair_bun_b.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hair_upwa",
+"cat": "hair",
+"name": "ゆいあげ",
+"rar": "SR",
+"ser": "wa",
+"tags": [
+"wa",
+"elegant"
+],
+"file": "hair_upwa_b.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hair_twinlong",
+"cat": "hair",
+"name": "ロングツインテール",
+"rar": "SR",
+"ser": "idol",
+"tags": [
+"pop",
+"shine"
+],
+"file": "hair_twinlong_b.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hair_short",
+"cat": "hair",
+"name": "ショートカット",
+"rar": "N",
+"ser": "casual",
+"tags": [
+"casual"
+],
+"file": "hair_short_b.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hair_curly",
+"cat": "hair",
+"name": "くるくるロング",
+"rar": "SSR",
+"ser": "fairy",
+"tags": [
+"nature",
+"magic"
+],
+"file": "hair_curly_b.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hair_rainbow",
+"cat": "hair",
+"name": "にじいろロング",
+"rar": "X",
+"ser": "angel",
+"tags": [
+"magic",
+"shine"
+],
+"file": "hair_rainbow_b.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "dress_goth1",
+"cat": "dress",
+"name": "ゴシックドレス",
+"rar": "SR",
+"ser": "gothic",
+"tags": [
+"dark",
+"elegant"
+],
+"file": "dress_goth1.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "dress_goth2",
+"cat": "dress",
+"name": "くろバラドレス",
+"rar": "SSR",
+"ser": "gothic",
+"tags": [
+"dark",
+"elegant"
+],
+"file": "dress_goth2.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "dress_goth3",
+"cat": "dress",
+"name": "やみのプリンセス",
+"rar": "X",
+"ser": "gothic",
+"tags": [
+"dark",
+"magic",
+"shine"
+],
+"file": "dress_goth3.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "dress_sweet1",
+"cat": "dress",
+"name": "あまロリドレス",
+"rar": "SR",
+"ser": "sweet",
+"tags": [
+"sweet",
+"cute"
+],
+"file": "dress_sweet1.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "dress_sweet2",
+"cat": "dress",
+"name": "ショートケーキドレス",
+"rar": "SSR",
+"ser": "sweet",
+"tags": [
+"sweet",
+"cute"
+],
+"file": "dress_sweet2.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "dress_sweet3",
+"cat": "dress",
+"name": "ミルクティドレス",
+"rar": "R",
+"ser": "sweet",
+"tags": [
+"sweet",
+"elegant"
+],
+"file": "dress_sweet3.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "dress_idol1",
+"cat": "dress",
+"name": "ステージドレス",
+"rar": "SR",
+"ser": "idol",
+"tags": [
+"pop",
+"shine"
+],
+"file": "dress_idol1.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "dress_idol2",
+"cat": "dress",
+"name": "キラキラアイドル",
+"rar": "SSR",
+"ser": "idol",
+"tags": [
+"pop",
+"shine"
+],
+"file": "dress_idol2.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "dress_magic1",
+"cat": "dress",
+"name": "まほうのドレス",
+"rar": "SR",
+"ser": "magic",
+"tags": [
+"magic",
+"shine"
+],
+"file": "dress_magic1.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "dress_magic2",
+"cat": "dress",
+"name": "ムーンドレス",
+"rar": "SSR",
+"ser": "magic",
+"tags": [
+"magic",
+"dark",
+"shine"
+],
+"file": "dress_magic2.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "dress_maid1",
+"cat": "dress",
+"name": "メイドふく",
+"rar": "R",
+"ser": "maid",
+"tags": [
+"elegant",
+"cute"
+],
+"file": "dress_maid1.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "dress_maid2",
+"cat": "dress",
+"name": "ネイビーメイド",
+"rar": "SR",
+"ser": "maid",
+"tags": [
+"elegant",
+"cute"
+],
+"file": "dress_maid2.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "dress_prin1",
+"cat": "dress",
+"name": "プリンセスドレス",
+"rar": "SSR",
+"ser": "princess",
+"tags": [
+"elegant",
+"shine"
+],
+"file": "dress_prin1.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "dress_prin2",
+"cat": "dress",
+"name": "ロイヤルドレス",
+"rar": "SSR",
+"ser": "princess",
+"tags": [
+"elegant",
+"shine"
+],
+"file": "dress_prin2.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "dress_school1",
+"cat": "dress",
+"name": "ブレザーワンピ",
+"rar": "N",
+"ser": "school",
+"tags": [
+"school"
+],
+"file": "dress_school1.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "dress_school2",
+"cat": "dress",
+"name": "セーラーワンピ",
+"rar": "N",
+"ser": "school",
+"tags": [
+"school",
+"cute"
+],
+"file": "dress_school2.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "top_tshirt",
+"cat": "top",
+"name": "ロゴなしTシャツ",
+"rar": "N",
+"ser": "casual",
+"tags": [
+"casual"
+],
+"file": "top_tshirt.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "top_frill",
+"cat": "top",
+"name": "フリルブラウス",
+"rar": "R",
+"ser": "sweet",
+"tags": [
+"sweet",
+"cute"
+],
+"file": "top_frill.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "top_sailor",
+"cat": "top",
+"name": "セーラーふく（うえ）",
+"rar": "N",
+"ser": "school",
+"tags": [
+"school"
+],
+"file": "top_sailor.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "top_hoodie",
+"cat": "top",
+"name": "パーカー",
+"rar": "R",
+"ser": "casual",
+"tags": [
+"casual",
+"pop"
+],
+"file": "top_hoodie.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "top_cardi",
+"cat": "top",
+"name": "カーディガン",
+"rar": "N",
+"ser": "school",
+"tags": [
+"school",
+"cute"
+],
+"file": "top_cardi.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "top_crop",
+"cat": "top",
+"name": "へそだしトップス",
+"rar": "R",
+"ser": "idol",
+"tags": [
+"pop"
+],
+"file": "top_crop.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "bot_skirt",
+"cat": "bot",
+"name": "ミニスカート",
+"rar": "N",
+"ser": "casual",
+"tags": [
+"casual",
+"cute"
+],
+"file": "bot_skirt.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "bot_pleat",
+"cat": "bot",
+"name": "プリーツスカート",
+"rar": "N",
+"ser": "school",
+"tags": [
+"school"
+],
+"file": "bot_pleat.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "bot_frillskirt",
+"cat": "bot",
+"name": "フリルスカート",
+"rar": "R",
+"ser": "sweet",
+"tags": [
+"sweet",
+"cute"
+],
+"file": "bot_frillskirt.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "bot_shorts",
+"cat": "bot",
+"name": "ショートパンツ",
+"rar": "N",
+"ser": "casual",
+"tags": [
+"casual"
+],
+"file": "bot_shorts.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "bot_jeans",
+"cat": "bot",
+"name": "ジーンズ",
+"rar": "R",
+"ser": "casual",
+"tags": [
+"casual",
+"pop"
+],
+"file": "bot_jeans.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "bot_tulle",
+"cat": "bot",
+"name": "チュールスカート",
+"rar": "SR",
+"ser": "idol",
+"tags": [
+"pop",
+"shine"
+],
+"file": "bot_tulle.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "outer_coat",
+"cat": "outer",
+"name": "ふわふわコート",
+"rar": "R",
+"ser": "casual",
+"tags": [
+"casual",
+"cute"
+],
+"file": "outer_coat.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "outer_cape",
+"cat": "outer",
+"name": "マント",
+"rar": "SR",
+"ser": "magic",
+"tags": [
+"magic",
+"dark"
+],
+"file": "outer_cape.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "outer_blazer",
+"cat": "outer",
+"name": "ブレザー",
+"rar": "N",
+"ser": "school",
+"tags": [
+"school"
+],
+"file": "outer_blazer.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "sock_white",
+"cat": "sock",
+"name": "しろいくつした",
+"rar": "N",
+"ser": "casual",
+"tags": [
+"casual"
+],
+"file": "sock_white.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "sock_kneewhite",
+"cat": "sock",
+"name": "しろハイソックス",
+"rar": "N",
+"ser": "school",
+"tags": [
+"school"
+],
+"file": "sock_kneewhite.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "sock_kneeblack",
+"cat": "sock",
+"name": "くろハイソックス",
+"rar": "R",
+"ser": "gothic",
+"tags": [
+"dark"
+],
+"file": "sock_kneeblack.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "sock_over",
+"cat": "sock",
+"name": "オーバーニーソックス",
+"rar": "R",
+"ser": "casual",
+"tags": [
+"casual",
+"pop"
+],
+"file": "sock_over.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "sock_stripe",
+"cat": "sock",
+"name": "ボーダーソックス",
+"rar": "R",
+"ser": "pop",
+"tags": [
+"pop",
+"cute"
+],
+"file": "sock_stripe.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "sock_lace",
+"cat": "sock",
+"name": "レースのくつした",
+"rar": "SR",
+"ser": "sweet",
+"tags": [
+"sweet",
+"elegant"
+],
+"file": "sock_lace.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "shoe_sneaker",
+"cat": "shoe",
+"name": "スニーカー",
+"rar": "N",
+"ser": "casual",
+"tags": [
+"casual",
+"pop"
+],
+"file": "shoe_sneaker.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "shoe_loafer",
+"cat": "shoe",
+"name": "ローファー",
+"rar": "N",
+"ser": "school",
+"tags": [
+"school"
+],
+"file": "shoe_loafer.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "shoe_mary",
+"cat": "shoe",
+"name": "メリージェーン",
+"rar": "R",
+"ser": "sweet",
+"tags": [
+"sweet",
+"cute"
+],
+"file": "shoe_mary.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "shoe_boots",
+"cat": "shoe",
+"name": "ブーツ",
+"rar": "R",
+"ser": "gothic",
+"tags": [
+"dark",
+"elegant"
+],
+"file": "shoe_boots.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "shoe_rainboots",
+"cat": "shoe",
+"name": "レインブーツ",
+"rar": "R",
+"ser": "marine",
+"tags": [
+"marine",
+"casual"
+],
+"file": "shoe_rainboots.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "shoe_sandal",
+"cat": "shoe",
+"name": "サンダル",
+"rar": "N",
+"ser": "marine",
+"tags": [
+"marine",
+"casual"
+],
+"file": "shoe_sandal.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "shoe_geta",
+"cat": "shoe",
+"name": "げた",
+"rar": "R",
+"ser": "wa",
+"tags": [
+"wa"
+],
+"file": "shoe_geta.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hacc_ribbon",
+"cat": "hacc",
+"name": "おおきなリボン",
+"rar": "N",
+"ser": "sweet",
+"tags": [
+"sweet",
+"cute"
+],
+"file": "hacc_ribbon.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hacc_catear",
+"cat": "hacc",
+"name": "ねこみみカチューシャ",
+"rar": "R",
+"ser": "casual",
+"tags": [
+"cute",
+"pop"
+],
+"file": "hacc_catear.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hacc_crown",
+"cat": "hacc",
+"name": "ティアラ",
+"rar": "SSR",
+"ser": "princess",
+"tags": [
+"elegant",
+"shine"
+],
+"file": "hacc_crown.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hacc_hat",
+"cat": "hacc",
+"name": "ベレーぼう",
+"rar": "R",
+"ser": "school",
+"tags": [
+"school",
+"elegant"
+],
+"file": "hacc_hat.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hacc_hairband",
+"cat": "hacc",
+"name": "レースカチューシャ",
+"rar": "R",
+"ser": "maid",
+"tags": [
+"elegant",
+"cute"
+],
+"file": "hacc_hairband.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hacc_flower",
+"cat": "hacc",
+"name": "はなかざり",
+"rar": "R",
+"ser": "nature",
+"tags": [
+"nature",
+"cute"
+],
+"file": "hacc_flower.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hacc_star",
+"cat": "hacc",
+"name": "ほしのヘアピン",
+"rar": "R",
+"ser": "magic",
+"tags": [
+"magic",
+"shine"
+],
+"file": "hacc_star.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hacc_kanzashi",
+"cat": "hacc",
+"name": "かんざし",
+"rar": "SR",
+"ser": "wa",
+"tags": [
+"wa",
+"elegant"
+],
+"file": "hacc_kanzashi.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hacc_gothhat",
+"cat": "hacc",
+"name": "ミニハット",
+"rar": "SR",
+"ser": "gothic",
+"tags": [
+"dark",
+"elegant"
+],
+"file": "hacc_gothhat.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hacc_witch",
+"cat": "hacc",
+"name": "まほうつかいのぼうし",
+"rar": "SR",
+"ser": "magic",
+"tags": [
+"magic",
+"dark"
+],
+"file": "hacc_witch.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "neck_choker",
+"cat": "neck",
+"name": "チョーカー",
+"rar": "R",
+"ser": "gothic",
+"tags": [
+"dark",
+"elegant"
+],
+"file": "neck_choker.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "neck_ribbonneck",
+"cat": "neck",
+"name": "リボンタイ",
+"rar": "N",
+"ser": "school",
+"tags": [
+"school",
+"cute"
+],
+"file": "neck_ribbonneck.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "neck_pearl",
+"cat": "neck",
+"name": "パールネックレス",
+"rar": "SR",
+"ser": "princess",
+"tags": [
+"elegant",
+"shine"
+],
+"file": "neck_pearl.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "neck_scarf",
+"cat": "neck",
+"name": "マフラー",
+"rar": "R",
+"ser": "casual",
+"tags": [
+"casual",
+"cute"
+],
+"file": "neck_scarf.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "ear_pearl",
+"cat": "ear",
+"name": "パールイヤリング",
+"rar": "R",
+"ser": "princess",
+"tags": [
+"elegant"
+],
+"file": "ear_pearl.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "ear_star",
+"cat": "ear",
+"name": "ほしのイヤリング",
+"rar": "R",
+"ser": "magic",
+"tags": [
+"magic",
+"shine"
+],
+"file": "ear_star.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "ear_heart",
+"cat": "ear",
+"name": "ハートイヤリング",
+"rar": "R",
+"ser": "sweet",
+"tags": [
+"sweet",
+"cute"
+],
+"file": "ear_heart.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "glasses_round",
+"cat": "glasses",
+"name": "まるメガネ",
+"rar": "N",
+"ser": "school",
+"tags": [
+"school",
+"cute"
+],
+"file": "glasses_round.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "glasses_square",
+"cat": "glasses",
+"name": "しかくメガネ",
+"rar": "N",
+"ser": "school",
+"tags": [
+"school"
+],
+"file": "glasses_square.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "glasses_sun",
+"cat": "glasses",
+"name": "サングラス",
+"rar": "R",
+"ser": "pop",
+"tags": [
+"pop",
+"casual"
+],
+"file": "glasses_sun.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "back_angelwing",
+"cat": "back",
+"name": "てんしのはね",
+"rar": "SSR",
+"ser": "angel",
+"tags": [
+"magic",
+"shine"
+],
+"file": "back_angelwing.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "back_devilwing",
+"cat": "back",
+"name": "あくまのはね",
+"rar": "SR",
+"ser": "gothic",
+"tags": [
+"dark",
+"magic"
+],
+"file": "back_devilwing.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "back_fairywing",
+"cat": "back",
+"name": "ようせいのはね",
+"rar": "SR",
+"ser": "fairy",
+"tags": [
+"nature",
+"magic"
+],
+"file": "back_fairywing.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "back_butterfly",
+"cat": "back",
+"name": "ちょうちょのはね",
+"rar": "SR",
+"ser": "fairy",
+"tags": [
+"nature",
+"cute"
+],
+"file": "back_butterfly.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "back_bigribbon",
+"cat": "back",
+"name": "せなかのおおリボン",
+"rar": "R",
+"ser": "sweet",
+"tags": [
+"sweet",
+"cute"
+],
+"file": "back_bigribbon.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hold_mic1",
+"cat": "hold",
+"name": "ピンクのマイク",
+"rar": "R",
+"ser": "idol",
+"tags": [
+"pop",
+"cute"
+],
+"file": "hold_mic1.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hold_mic2",
+"cat": "hold",
+"name": "ゴールドマイク",
+"rar": "SR",
+"ser": "idol",
+"tags": [
+"pop",
+"shine"
+],
+"file": "hold_mic2.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hold_mic3",
+"cat": "hold",
+"name": "ハートマイク",
+"rar": "SR",
+"ser": "sweet",
+"tags": [
+"sweet",
+"cute"
+],
+"file": "hold_mic3.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hold_mic4",
+"cat": "hold",
+"name": "ステージマイク",
+"rar": "SSR",
+"ser": "idol",
+"tags": [
+"pop",
+"shine"
+],
+"file": "hold_mic4.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hold_wand",
+"cat": "hold",
+"name": "まほうのステッキ",
+"rar": "SR",
+"ser": "magic",
+"tags": [
+"magic",
+"shine"
+],
+"file": "hold_wand.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "hold_bear",
+"cat": "hold",
+"name": "くまのぬいぐるみ",
+"rar": "R",
+"ser": "sweet",
+"tags": [
+"cute",
+"sweet"
+],
+"file": "hold_bear.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "bang_sweep",
+"cat": "bang",
+"name": "ななめまえがみ",
+"rar": "N",
+"ser": "casual",
+"tags": [
+"casual"
+],
+"file": "bang_sweep.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "bang_center",
+"cat": "bang",
+"name": "まんなかわけ",
+"rar": "N",
+"ser": "casual",
+"tags": [
+"casual"
+],
+"file": "bang_center.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "bang_wispy",
+"cat": "bang",
+"name": "ふんわりまえがみ",
+"rar": "R",
+"ser": "sweet",
+"tags": [
+"sweet"
+],
+"file": "bang_wispy.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "bang_short",
+"cat": "bang",
+"name": "みじかいまえがみ",
+"rar": "N",
+"ser": "casual",
+"tags": [
+"casual"
+],
+"file": "bang_short.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "bang_curl",
+"cat": "bang",
+"name": "くるくるまえがみ",
+"rar": "R",
+"ser": "sweet",
+"tags": [
+"sweet"
+],
+"file": "bang_curl.webp",
+"adj": [
+0,
+0,
+1
+]
+},
+{
+"id": "bang_long",
+"cat": "bang",
+"name": "ぱっつんまえがみ",
+"rar": "N",
+"ser": "casual",
+"tags": [
+"casual"
+],
+"file": "hair_long_f.webp",
+"adj": [
+0,
+0,
+1
+]
+}
+]
+}
